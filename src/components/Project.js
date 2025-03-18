@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import './css/custom.css'
 import './css/media.css'
 import { Link, useNavigate } from 'react-router-dom'
@@ -10,11 +10,20 @@ import angleDown from "./image/angle-down.png"
 import notification from "./image/notification.svg"
 
 const Project = () => {
+  const [userData, setUserData] = useState([])
   const navigate = useNavigate()
   const handleLogout = () => {
     localStorage.setItem("isLoggedIn", false)
     navigate("/login")
   }
+
+  useEffect(() => {
+    const storedData = localStorage.getItem("data");
+    if (storedData) {
+      setUserData(JSON.parse(storedData));
+    }
+  }, []);
+
   return (
     <div className="main_container">
       <div className="limani_body">
@@ -152,20 +161,21 @@ const Project = () => {
             <div className="contact-profile">
 
               <div className="row">
-                <div className="col-lg-6">
+                {userData.length > 0 ? (userData.map((user, ind) => (
+                  <div key={ind} className="col-lg-6">
                   <div className="professional_info">
                     <div className="project-card-top">
                       <div className="project-card-heading d-flex align-items-center justify-content-between">
                         <div className="body_heading2 mb-0">
-                          <h2 className="font-18 mb-0">Excel To Insight Consulting</h2>
-                          <p className="mb-0 body-sub-heading font-12">Created by:- <span>Vineet Tomer</span></p>
+                          <h2 className="font-18 mb-0">{user.username}</h2>
+                          <p className="mb-0 body-sub-heading font-12">Created by:- <span>{user.email}</span></p>
                         </div>
-                        <p className="mb-0 font-14 body-sub-heading ">Managed By: <span> Vipin Paul</span> </p>
+                        <p className="mb-0 font-14 body-sub-heading ">Gender: <span> {user.gender}</span> </p>
 
                       </div>
                       <div className="technology-heading d-flex align-items-center justify-content-between">
-                        <p className="my-2 font-14 body-sub-heading "><span className="me-2"><img src={globe} alt="" /></span>Technology: <span> Web Design, React, Php</span></p>
-                        <p className="my-2 font-14 body-sub-heading ">Milestones: <span>05</span>  </p>
+                        <p className="my-2 font-14 body-sub-heading "><span className="me-2"><img src={user.file} style={{ maxWidth: "30px", }} alt="" /></span>Stream: <span> {user.stream}</span></p>
+                        <p className="my-2 font-14 body-sub-heading ">Age: <span>{user.age}</span>  </p>
                       </div>
                       <div className="project-progress mt-2">
                         <div className="progress" role="progressbar" aria-label="Basic example" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
@@ -174,18 +184,20 @@ const Project = () => {
                         </div>
                       </div>
                       <div className=" d-flex align-items-center justify-content-between">
-                        <p className="my-2 font-14 body-sub-heading ">Current Milestone: <span> 02</span></p>
-                        <p className="my-2 font-14 body-sub-heading ">20% <span>Complete </span> </p>
+                        <p className="my-2 font-14 body-sub-heading ">Subjects: <span> {user.subject.join(", ")}</span></p>
+                        <p className="my-2 font-14 body-sub-heading ">Status <span>{user.status} </span> </p>
                       </div>
                     </div>
-                    <div className="project-bottom">
+                    {/* <div className="project-bottom">
                       <p className="font-14 mb-0">Next Task:</p>
                       <p className="font-14 mb-0 color-para">Deliverables will be drafted at the time of the design phase</p>
-                    </div>
+                    </div> */}
 
                   </div>
                 </div>
-                <div className="col-lg-6">
+                )
+                )): (<h1>No data found</h1>)}
+                {/* <div className="col-lg-6">
                   <div className="professional_info">
                     <div className="project-card-top">
                       <div className="project-card-heading d-flex align-items-center justify-content-between">
@@ -219,7 +231,7 @@ const Project = () => {
                     </div>
 
                   </div>
-                </div>
+                </div> */}
               </div>
 
             </div>
