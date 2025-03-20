@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import './css/custom.css'
 import './css/media.css'
 import { Link, useNavigate } from 'react-router-dom'
@@ -6,7 +6,10 @@ import logo2 from "./image/BT-logo2.png"
 import clock from "./image/clock.png"
 import angleDown from "./image/angle-down.png"
 import notification from "./image/notification.svg"
-import Popup from 'reactjs-popup';
+import Form from 'react-bootstrap/Form';
+import Modal from 'react-bootstrap/Modal';
+import Button from 'react-bootstrap/Button';
+import Pagination from './Pagination'
 
 const Project = () => {
   const [userData, setUserData] = useState([]);
@@ -14,31 +17,61 @@ const Project = () => {
   const [editData, setEditData] = useState({})
   const [checkEdit, setCheckEdit] = useState(false)
   const [loggedInUser, setLoggedInUser] = useState('');
-  const navigate = useNavigate();
+  const [show, setShow] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  const [showDelete, setShowDelete] = useState(false)
+  const [deleteInd, setDeleteInd] = useState(null)
+  const [selectedValue, setSelectedValue] = useState('');
+  const [userName, setUserName] = useState('');
+  const [age, setAge] = useState('');
+  const [email, setEmail] = useState('');
+  const [gender, setGender] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [subject, setSubject] = useState([]);
+  const [file, setFile] = useState(null);
+  const [currPage, setCurrPage] = useState([])
+  const fileInputRef = useRef(null);
+  const genderInputRef = useRef()
+  const navigate = useNavigate()
+
+  const pageLimit = 1;
+
   const handleLogout = () => {
     localStorage.removeItem("isLoggedIn");
     localStorage.removeItem("user");
     navigate("/login");
   };
 
+  const handleShowDelete = (ind) => {
+    setShowDelete(true);
+    setDeleteInd(ind)
+  }
+  const handleCloseDelete = () => setShowDelete(false);
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+
+  const handleFormOpen = () => setShowForm(true);
+  const handleFormClose = () => setShowForm(false);
+
   useEffect(() => {
     const storedData = localStorage.getItem("data");
     const user = JSON.parse(localStorage.getItem("user"));
 
     if (user) {
-      const loggedInUserData = user;
-
+      const loggedInUserData = user
       setLoggedInUser(user);
       console.log("+++++++++++++++++++++", loggedInUser);
       if (storedData) {
         const allUsers = JSON.parse(storedData);
         console.log("All Users", allUsers);
 
-        // const filteredUsers = allUsers
-        //   .filter(
-        //     (u) => u.email !== loggedInUserData.email
-        //   );
-        setUserData(allUsers);
+        const filteredUsers = allUsers
+          .filter(
+            (u) => u.email !== loggedInUserData.email
+          );
+        setUserData(filteredUsers);
         console.log("Usersssss", userData);
       }
     } else {
@@ -51,17 +84,13 @@ const Project = () => {
   const handleDelete = (ind) => {
     const updatedData = userData.filter((_, i) => i !== ind)
     setUserData(updatedData)
+    handleCloseDelete()
+    setDeleteInd(null)
     localStorage.setItem("data", JSON.stringify(updatedData))
   }
 
-  const validateField = (field, regex, errorId) => {
-    const isValid = regex.test(field)
-    document.getElementById(errorId).style.display = isValid ? 'none' : 'block'
-    return isValid;
-  }
 
-  const validateUserName = (username) =>
-    validateField(username, /^[a-z0-9]+$/i, 'username-error');
+
 
   const validateEmail = (email) =>
     validateField(email, /^[a-z0-9._-]+@[a-z0-9.-]+\.[a-z]{2,6}$/, 'email-error');
@@ -69,6 +98,23 @@ const Project = () => {
   const validateAge = (age) => {
     const isValid = parseInt(age, 10) >= 16 && parseInt(age, 10) <= 90
     document.getElementById('age-error').style.display = isValid ? 'none' : 'block';
+    return isValid;
+  };
+
+  const validateRequiredFieldsForm = () => {
+    let isValid = true;
+    if (!gender) {
+      document.getElementById('gender-error').style.display = 'block';
+      isValid = false;
+    }
+    if (!selectedValue) {
+      document.getElementById('stream-error').style.display = 'block';
+      isValid = false;
+    }
+    if (subject.size === 0) {
+      document.getElementById('subject-error').style.display = 'block';
+      isValid = false;
+    }
     return isValid;
   };
 
@@ -97,6 +143,7 @@ const Project = () => {
   }
 
   const handleEdit = (ind) => {
+    handleShow()
     setCheckEdit(!checkEdit)
     setEditInd(ind)
     setEditData({ ...userData[ind] })
@@ -120,17 +167,42 @@ const Project = () => {
     }
   }
 
+  const handleForm = () => {
+    handleFormOpen()
+  }
+
+  const mySearch = () => {
+    let input = document.getElementById("myInput")
+    let filter = input.value.toLowerCase();
+    let con = document.getElementById("for-search")
+    console.log(con.length);
+    
+    let p = document.getElementsByTagName("p")
+    for (let i = 1; i < p.length; i++) {
+      let textVal = p[i].textContent || p[i].innerText
+      console.log(textVal);
+      if (textVal.toLowerCase().indexOf(filter) > -1) {
+        p[i].style.display = "";
+      }
+      else {
+        p[i].style.display = "none"
+      }
+    }
+  }
+
   const handleSave = (e) => {
     e.preventDefault()
     if (validateUserName(editData.username) &&
       validateEmail(editData.email) &&
-      validateAge(editData.age) &&
+      validateAge(editData.age) && 
+      // validateLocalEmail(editData.email) &&
       validateRequiredFields()
     ) {
       const updatedData = [...userData];
       updatedData[editInd] = editData
       setUserData(updatedData)
       localStorage.setItem("data", JSON.stringify(updatedData))
+      handleClose()
       setEditInd(null)
       setEditData({})
     }
@@ -144,22 +216,6 @@ const Project = () => {
     return emailExist;
   };
 
-  const mySearch = () => {
-    let input = document.getElementById("myInput")
-    let filter = input.value.toLowerCase();
-    // let div = document.getElementById('for-search')
-    let p = document.getElementsByTagName("card")
-    for (let i = 1; i < p.length; i++) {
-      let textVal = p[i].textContent || p[i].innerText
-      if (textVal.toLowerCase().indexOf(filter) > -1) {
-        p[i].style.display = "";
-      }
-      else {
-        p[i].style.display = "none"
-      }
-    }
-  }
-
   const genderOptions = ["Male", "Female", "Other"]
 
   const checkOption = [
@@ -168,6 +224,123 @@ const Project = () => {
     { name: 'Math ', key: 'math', label: 'Math ' },
     { name: 'Biology ', key: 'bio', label: 'Biology ' },
   ];
+
+
+  const handleRadioChange = (val) => {
+    setSelectedValue(val);
+    document.getElementById('stream-error').style.display = 'none';
+  }
+
+  const handleSubjectChange = (val) => {
+    console.log(val.target.name, "     ", val.target.checked);
+    const newArr = [...subject];
+    if (val.target.checked) {
+      newArr.push(val.target.name)
+    }
+    else {
+      newArr.splice(newArr.indexOf(val.target.key), 1)
+    }
+    setSubject(newArr)
+  };
+
+  const handlePasswordChange = (val) => {
+    setPassword(val.target.value);
+    document.getElementById('password-error').style.display = 'none';
+  };
+
+  const handleConfirmPasswordChange = (val) => {
+    setConfirmPassword(val.target.value);
+    document.getElementById('cPassword-error').style.display = 'none';
+  };
+
+
+
+  const handleProfilePic = (val) => {
+    const file = val.target.files[0]
+    if (file) {
+      const read = new FileReader()
+      read.onloadend = () => {
+        setFile(read.result)
+      }
+      read.readAsDataURL(file)
+    }
+  };
+
+  const validateField = (field, regex, errorId) => {
+    const isValid = regex.test(field);
+    document.getElementById(errorId).style.display = isValid ? 'none' : 'block';
+    return isValid;
+  };
+
+  const validateUserName = (username) =>
+    validateField(username, /^[a-z0-9]+$/i, 'username-error');
+
+  const comparePassword = (password, confirmPassword) => {
+    const isValid = password === confirmPassword;
+    document.getElementById('cPassword-error').style.display = isValid ? 'none' : 'block';
+    return isValid;
+  };
+
+
+
+  const handleGenderChange = (val) => {
+    setGender(val);
+    document.getElementById('gender-error').style.display = val === 'select' ? 'block' : 'none';
+  };
+
+
+
+
+  const validatePassword = (password) =>
+    validateField(password, /^[a-zA-Z0-9!@#$%^&*]{6,16}$/, 'password-error');
+
+  const handleClear = () => {
+    setUserName('');
+    setAge('');
+    setEmail('');
+    setPassword('');
+    setConfirmPassword('');
+    setSubject(new Map());
+    setFile(null);
+    setSelectedValue('');
+    setGender('');
+    if (genderInputRef.current) {
+      genderInputRef.current.value = '';
+    }
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const storeData = (e) => {
+    e.preventDefault();
+    if (
+      validateUserName(userName) &&
+      validateEmail(email) &&
+      validateAge(age) &&
+      validatePassword(password) &&
+      comparePassword(password, confirmPassword) &&
+      // validateLocalEmail(email) &&
+      validateRequiredFieldsForm()
+    ) {
+      const userData = {
+        username: userName,
+        email,
+        gender,
+        age,
+        stream: selectedValue,
+        file,
+        subject: [...subject],
+        password
+      };
+      const user = JSON.parse(localStorage.getItem('data')) || [];
+      user.push(userData);
+      localStorage.setItem('data', JSON.stringify(user));
+      // handleClear();
+      handleFormClose()
+    }
+    
+  };
 
   return (
     <div className="main_container">
@@ -276,9 +449,9 @@ const Project = () => {
           <div className="body_content">
             <div className="top_header d-flex align-items-center justify-content-between">
               <h1>Projects</h1>
-              {/* <div>
+              <div>
                 <input type="text" id="myInput" onKeyUp={mySearch} placeholder="search" />
-              </div> */}
+              </div>
               <div className="header_notification d-flex align-items-center gap-2">
                 <div className="filter-dropdown green-filter dropdown">
                   <button className="btn filter-btn green-filter-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -293,9 +466,10 @@ const Project = () => {
                   </ul>
                 </div>
                 <div className="header_icon position-relative notification d-flex align-items-center justify-content-center">
-                  <img src={notification} alt='' />
-                  <span className="notification_alert"></span>
-                  <p>02</p>
+                  {/* <img src={notification} alt='' /> */}
+                  {/* <span className="notification_alert"></span> */}
+                  {/* <p>02</p> */}
+                  <h6 onClick={handleForm} style={{cursor: 'pointer'}}>Add</h6>
                 </div>
                 <div className="header_icon position-relative notification d-flex align-items-center justify-content-center">
                   <svg onClick={handleLogout} style={{ cursor: 'pointer' }} width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -314,98 +488,20 @@ const Project = () => {
                     <div className="professional_info">
                       <div className="project-card-top">
                         <div className="project-card-heading d-flex align-items-center justify-content-between">
-                          <div className="body_heading2 mb-0">
-                            <h2 className="font-18 mb-0">{user.username}</h2>
-                            <span>
-                              <button className="dropdown-toggle border-0 w-0 d-flex align-items-center" type="button"
-                                data-bs-toggle="dropdown" aria-expanded="false">
-                              </button>
-                              <ul className="dropdown-menu w-100">
-                                <li><Popup trigger={<span className="dropdown-item" onClick={() => handleEdit(ind)}>Update</span>}>
-                                  {editInd !== null && (
-                                    <form className='form-controller' onSubmit={handleSave}>
-                                      <div>Username:
-                                        <input type='text' name="username" value={editData.username} onChange={handleChange} onInput={validateUserName} placeholder='Enter Username' minLength={6} maxLength={20} />
-                                        <span id='username-error' style={{ display: "none" }}>Enter valid username</span>
-                                      </div><br />
-                                      <div>
-                                        Select Gender:
-                                        <select name="gender" value={editData.gender || ""} onChange={handleChange}>
-                                          <option value="">Select</option>
-                                          {genderOptions.map((val, ind) => (
-                                            <option key={ind} value={val}>
-                                              {val}
-                                            </option>
-                                          ))}
-                                        </select>
-                                        <span id='gender-error' style={{ display: 'none' }}>Select your gender</span>
-                                      </div><br />
-                                      <div>Age:
-                                        <input type='text' name="age" value={editData.age} onChange={handleChange} onInput={validateAge} />
-                                        <span id='age-error' style={{ display: 'none' }}>Age must be greater than 16 and less than 90</span>
-                                      </div><br />
-                                      <div>Email:
-                                        <input type='text' name="email" value={editData.email} onChange={handleChange} onInput={validateEmail && validateLocalEmail} />
-                                        <span id='email-error' style={{ display: "none" }}>Enter valid Email</span>
-                                        <span id='duplicate-error' style={{ display: "none" }}>Email already exist</span>
-                                      </div><br />
-                                      <div>
-                                        Stream:
-                                        <label>
-                                          <input
-                                            type="radio"
-                                            name="stream"
-                                            value="PCM"
-                                            checked={editData.stream === "PCM"}
-                                            onChange={handleChange}
-                                          />
-                                          PCM
-                                        </label>
-                                        <label>
-                                          <input
-                                            type="radio"
-                                            name="stream"
-                                            value="Commerce"
-                                            checked={editData.stream === "Commerce"}
-                                            onChange={handleChange}
-                                          />
-                                          Commerce
-                                        </label>
-                                        <label>
-                                          <input
-                                            type="radio"
-                                            name="stream"
-                                            value="Arts"
-                                            checked={editData.stream === "Arts"}
-                                            onChange={handleChange}
-                                          />
-                                          Arts
-                                        </label>
-                                        <span id='stream-error' style={{ display: 'none', color: 'red' }}>Select a stream</span>
-                                      </div><br />
-                                      <div>
-                                        Subjects:
-                                        {checkOption.map((it) => (
-                                          <label key={it.key}>
-                                            {it.label}
-                                            <input
-                                              type="checkbox"
-                                              name={it.name}
-                                              value={it.label}
-                                              checked={(editData.subject).includes(it.label)}
-                                              onChange={handleChange}
-                                            />
-                                          </label>
-                                        ))}
-                                        <span id='subject-error' style={{ display: 'none', color: 'red' }}>Select at least one subject</span>
-                                      </div>
-                                      <button type="submit">Update</button>
-                                    </form>
-                                  )}
-                                </Popup>
-                                </li>
-                                <li><span className="dropdown-item" onClick={() => handleDelete(ind)}>Delete</span></li>
-                              </ul></span>
+                          <div className="body_heading2 mb-0 ">
+                            <div className='d-flex'>
+                              <h2 className="font-18 mb-0">{user.username}</h2>
+                              <span className=''>
+                                <button className="dropdown-toggle border-0 w-0 d-flex align-items-center" type="button"
+                                  data-bs-toggle="dropdown" aria-expanded="false">
+                                </button>
+                                <ul className="dropdown-menu w-100">
+                                  <li>
+                                    <span className="dropdown-item" style={{cursor:'pointer'}} onClick={() => handleEdit(ind)}>Update</span></li>
+                                  <li><span className="dropdown-item" style={{cursor:'pointer'}} onClick={() => handleShowDelete(ind)}>Delete</span></li>
+                                </ul>
+                              </span>
+                            </div>
                             <p className="mb-0 body-sub-heading font-12">Created by:- <span>{user.email}</span></p>
                           </div>
                           <p className="mb-0 font-14 body-sub-heading ">Gender: <span> {user.gender}</span> </p>
@@ -418,7 +514,6 @@ const Project = () => {
                         <div className="project-progress mt-2">
                           <div className="progress" role="progressbar" aria-label="Basic example" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
                             <div className="progress-bar" style={{ width: '25%' }}></div>
-
                           </div>
                         </div>
                         <div className=" d-flex align-items-center justify-content-between">
@@ -477,6 +572,9 @@ const Project = () => {
                   </div>
                 </div> */}
               </div>
+              
+
+
 
               {/* {editInd !== null && (
                 <form className='form-controller' onSubmit={handleSave}>
@@ -558,10 +656,230 @@ const Project = () => {
                   <button type="submit">Update</button>
                 </form>
               )} */}
+
+              {editInd !== null && (
+                <Modal show={show} onHide={handleClose}>
+                  <Modal.Header closeButton>
+                    <Modal.Title>Modal heading</Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                    <Form>
+                      <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                        <Form.Label>Username</Form.Label>
+                        <Form.Control
+                          type='text' name="username" value={editData.username} onChange={handleChange} onInput={validateUserName} placeholder='Enter Username' minLength={6} maxLength={20}
+                        />
+                        <span id='username-error' style={{ display: "none" }}>Enter valid username</span>
+                      </Form.Group>
+                      <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                        <Form.Label>Select Gender</Form.Label>
+
+                        <Form.Select name="gender" value={editData.gender || ""} onChange={handleChange}>
+                          <option value="">Select</option>
+                          {genderOptions.map((val, ind) => (
+                            <option key={ind} value={val}>
+                              {val}
+                            </option>
+                          ))}
+                        </Form.Select>
+                        <span id='gender-error' style={{ display: 'none' }}>Select your gender</span>
+                      </Form.Group>
+                      <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                        <Form.Label>Age</Form.Label>
+                        <Form.Control
+                          type='text' name="age" value={editData.age} onChange={handleChange} onInput={validateAge}
+                        />
+                        <span id='age-error' style={{ display: 'none' }}>Age must be greater than 16 and less than 90</span>
+                      </Form.Group>
+                      <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                        <Form.Label>Email</Form.Label>
+                        <Form.Control
+                          type='text' name="email" value={editData.email} onChange={handleChange} onInput={(e) => validateLocalEmail(e.target.value)}
+                        />
+                        <span id='email-error' style={{ display: "none" }}>Enter valid Email</span>
+                        <span id='duplicate-error' style={{ display: "none" }}>Email already exist</span>
+                      </Form.Group>
+                      <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                        <Form.Label>Stream</Form.Label>
+                        <Form.Label>
+                          <input
+                            type="radio"
+                            name="stream"
+                            value="PCM"
+                            checked={editData.stream === "PCM"}
+                            onChange={handleChange}
+                          />
+                          PCM
+                        </Form.Label>
+                        <Form.Label>
+                          <input
+                            type="radio"
+                            name="stream"
+                            value="Commerce"
+                            checked={editData.stream === "Commerce"}
+                            onChange={handleChange}
+                          />
+                          Commerce
+                        </Form.Label>
+                        <Form.Label>
+                          <input
+                            type="radio"
+                            name="stream"
+                            value="Arts"
+                            checked={editData.stream === "Arts"}
+                            onChange={handleChange}
+                          />
+                          Arts
+                        </Form.Label>
+                        <span id='stream-error' style={{ display: 'none', color: 'red' }}>Select a stream</span>
+                      </Form.Group>
+                      <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                        Subjects:
+                        {checkOption.map((it) => (
+                          <label key={it.key}>
+                            {it.label}
+                            <input
+                              type="checkbox"
+                              name={it.name}
+                              value={it.label}
+                              checked={(editData.subject).includes(it.label)}
+                              onChange={handleChange}
+                            />
+                          </label>
+                        ))}
+
+                        <span id='subject-error' style={{ display: 'none', color: 'red' }}>Select at least one subject</span>
+                      </Form.Group>
+                    </Form>
+                  </Modal.Body>
+                  <Modal.Footer>
+                    <Button variant="secondary" onClick={handleClose}>
+                      Close
+                    </Button>
+                    <Button variant="primary" onClick={handleSave}>
+                      Save Changes
+                    </Button>
+                  </Modal.Footer>
+                </Modal>)}
+
+              <Modal show={showDelete} onHide={handleCloseDelete}
+                size="lg"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered
+              >
+                <Modal.Header closeButton>
+                  <Modal.Title id="contained-modal-title-vcenter">
+                  </Modal.Title>
+                </Modal.Header>
+                <Modal.Footer>
+                  <Button variant="secondary" onClick={handleCloseDelete}>
+                    Close
+                  </Button>
+                  <Button variant="danger" onClick={() => handleDelete(deleteInd)}>
+                    Are you sure want to delete!
+                  </Button>
+                </Modal.Footer>
+              </Modal>
+
+
+
+              <Modal show={showForm} onHide={handleFormClose}>
+                <Modal.Header closeButton>
+                  <Modal.Title>Modal heading</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  <Form>
+                    <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                      <Form.Label>Username</Form.Label>
+                      <Form.Control
+                        type='text' value={userName} onChange={(e) => setUserName(e.target.value)} placeholder='Enter Username' minLength={6} maxLength={20}
+                      />
+                      <span id='username-error' style={{ display: "none" }}>Enter valid username</span>
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                      <Form.Label>Select Gender</Form.Label>
+
+                      <Form.Select ref={genderInputRef} onChange={(e) => handleGenderChange(e.target.value)}>
+                        <option value="">Select</option>
+                        <option>Male</option>
+                        <option>Female</option>
+                        <option>Other</option>
+                      </Form.Select>
+                      <span id='gender-error' style={{ display: 'none' }}>Select your gender</span>
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                      <Form.Label>Age</Form.Label>
+                      <Form.Control
+                        type='text' value={age} onChange={(e) => setAge(e.target.value)}
+                      />
+                      <span id='age-error' style={{ display: 'none' }}>Age must be greater than 16 and less than 90</span>
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                      <Form.Label>Email</Form.Label>
+                      <Form.Control
+                        type='text' value={email} onChange={(e) => setEmail(e.target.value)} onInput={(e) => validateLocalEmail(e.target.value)}
+                      />
+                      <span id='email-error' style={{ display: "none" }}>Enter valid Email</span>
+                      <span id='duplicate-error' style={{ display: "none" }}>Email already exist</span>
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                      <Form.Label>Stream</Form.Label>
+                      <input type='radio' checked={selectedValue === 'PCM'} onChange={() => handleRadioChange('PCM')} />PCM
+                      <input type='radio' checked={selectedValue === 'Commerce'} onChange={() => handleRadioChange('Commerce')} />Commerce
+                      <input type='radio' checked={selectedValue === 'Arts'} onChange={() => handleRadioChange('Arts')} />Arts
+                      <span id='stream-error' style={{ display: 'none', color: 'red' }}>Select a stream</span>
+                      <span id='stream-error' style={{ display: 'none', color: 'red' }}>Select a stream</span>
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                      Subjects:
+                      {checkOption.map((it) => (
+                        <label key={it.key}>
+                          {it.label}
+                          <input type='checkbox' name={it.name} checked={subject.includes(it.name)} onChange={handleSubjectChange} />
+                        </label>
+                      ))}
+
+                      <span id='subject-error' style={{ display: 'none', color: 'red' }}>Select at least one subject</span>
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                      <Form.Label>Password</Form.Label>
+                      <Form.Control
+                        type='text' value={password} onChange={handlePasswordChange} onInput={validatePassword}
+                      />
+                      <span id='password-error' style={{ display: "none", color: 'red' }}>Enter valid password</span>
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                      <Form.Label>Confirm Password</Form.Label>
+                      <Form.Control
+                        type='text' value={confirmPassword} onChange={handleConfirmPasswordChange} onInput={comparePassword}
+                      />
+                      <span id='cPassword-error' style={{ display: "none", color: 'red' }}>password and confirm password not matched</span>
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                      <Form.Label>Profile photo</Form.Label>
+                      <Form.Control
+                        type='file' ref={fileInputRef} onChange={handleProfilePic}
+                      />
+                    </Form.Group>
+                  </Form>
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button variant="secondary" onClick={handleFormClose}>
+                    Close
+                  </Button>
+                  <Button variant="primary" onClick={storeData}>
+                    Save User
+                  </Button>
+                </Modal.Footer>
+              </Modal>
+              
+              
             </div>
           </div>
+          {/* <Pagination items={userData} pageLimit={pageLimit} setPageItems={setCurrPage} /> */}
         </div>
       </div>
+      
     </div>
   )
 }
