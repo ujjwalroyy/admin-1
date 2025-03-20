@@ -15,61 +15,37 @@ const LoginPage = () => {
 
   const navigate = useNavigate()
 
+  // console.log("User", JSON.parse(localStorage.getItem('isLoggedIn'))); // console.log("set", typeof(localStorage.getItem('isLoggedIn')));
 
-  // console.log("User", JSON.parse(localStorage.getItem('isLoggedIn')));
-  // console.log("set", typeof(localStorage.getItem('isLoggedIn')));
+  const validateField = (field, regex, errorId) => { const isValid = regex.test(field); document.getElementById(errorId).style.display = isValid ? 'none' : 'block'; return isValid; };
 
-  const validateField = (field, regex, errorId) => {
-    const isValid = regex.test(field);
-    document.getElementById(errorId).style.display = isValid ? 'none' : 'block';
-    return isValid;
-  };
+  const validateEmail = (email) => validateField(email, /^[a-z0-9._-]+@[a-z0-9.-]+.[a-z]{2,6}$/, 'email-error');
 
-  const validateEmail = (email) =>
-    validateField(email, /^[a-z0-9._-]+@[a-z0-9.-]+\.[a-z]{2,6}$/, 'email-error');
-
-  const validatePassword = (password) =>
-    validateField(password, /^[a-zA-Z0-9!@#$%^&*]{6,16}$/, 'password-error');
+  const validatePassword = (password) => validateField(password, /^[a-zA-Z0-9!@#$%^&*]{6,16}$/, 'password-error');
 
   const loginHandler = (e) => {
-    e.preventDefault()
-    let emailCheck = false
-    let passwordCheck = false;
-    const users = JSON.parse(localStorage.getItem('data'))
+    e.preventDefault(); let emailCheck = false; let passwordCheck = false;
+    const users = JSON.parse(localStorage.getItem('data'));
 
     if (validateEmail(email) && validatePassword(password)) {
-      users.map(function (val, ind) {
+      users?.forEach((val) => {
         if (val.email === email) {
-          emailCheck = true
-          console.log("email check", emailCheck);
+          emailCheck = true;
         }
         if (val.password === password) {
-          passwordCheck = true
-          console.log("password check", passwordCheck);
+          passwordCheck = true;
         }
         if (val.email === email && val.password === password) {
-          localStorage.setItem("isLoggedIn", true)
-          // console.log("User", JSON.parse(localStorage.getItem('isLoggedIn')));
-          // const check = localStorage.getItem("isLoggedIn")
-          navigate("/projects")
+          localStorage.setItem('isLoggedIn', 'true');
+          localStorage.setItem('user', JSON.stringify(val));
+          navigate('/projects');
         }
+      });
 
-      })
-      if (!emailCheck) {
-        document.getElementById('email-check').style.display = 'block'
-      }
-      if (emailCheck) {
-        document.getElementById('email-check').style.display = 'none'
-      }
-
-      if (!passwordCheck) {
-        document.getElementById('password-check').style.display = 'block'
-      }
-      if (passwordCheck) {
-        document.getElementById('password-check').style.display = 'none'
-      }
+      document.getElementById('email-check').style.display = emailCheck ? 'none' : 'block';
+      document.getElementById('password-check').style.display = passwordCheck ? 'none' : 'block';
     }
-  }
+  };
 
   return (
     <section className="sign_in p-0">

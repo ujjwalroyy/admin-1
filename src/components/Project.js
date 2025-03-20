@@ -3,26 +3,171 @@ import './css/custom.css'
 import './css/media.css'
 import { Link, useNavigate } from 'react-router-dom'
 import logo2 from "./image/BT-logo2.png"
-import person from "./image/person.svg"
 import clock from "./image/clock.png"
-import globe from "./image/globe.png"
 import angleDown from "./image/angle-down.png"
 import notification from "./image/notification.svg"
+import Popup from 'reactjs-popup';
 
 const Project = () => {
-  const [userData, setUserData] = useState([])
-  const navigate = useNavigate()
+  const [userData, setUserData] = useState([]);
+  const [editInd, setEditInd] = useState(null)
+  const [editData, setEditData] = useState({})
+  const [checkEdit, setCheckEdit] = useState(false)
+  const [loggedInUser, setLoggedInUser] = useState('');
+  const navigate = useNavigate();
   const handleLogout = () => {
-    localStorage.setItem("isLoggedIn", false)
-    navigate("/login")
-  }
+    localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("user");
+    navigate("/login");
+  };
 
   useEffect(() => {
     const storedData = localStorage.getItem("data");
-    if (storedData) {
-      setUserData(JSON.parse(storedData));
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (user) {
+      const loggedInUserData = user;
+
+      setLoggedInUser(user);
+      console.log("+++++++++++++++++++++", loggedInUser);
+      if (storedData) {
+        const allUsers = JSON.parse(storedData);
+        console.log("All Users", allUsers);
+
+        // const filteredUsers = allUsers
+        //   .filter(
+        //     (u) => u.email !== loggedInUserData.email
+        //   );
+        setUserData(allUsers);
+        console.log("Usersssss", userData);
+      }
+    } else {
+      if (storedData) {
+        setUserData(JSON.parse(storedData));
+      }
     }
   }, []);
+
+  const handleDelete = (ind) => {
+    const updatedData = userData.filter((_, i) => i !== ind)
+    setUserData(updatedData)
+    localStorage.setItem("data", JSON.stringify(updatedData))
+  }
+
+  const validateField = (field, regex, errorId) => {
+    const isValid = regex.test(field)
+    document.getElementById(errorId).style.display = isValid ? 'none' : 'block'
+    return isValid;
+  }
+
+  const validateUserName = (username) =>
+    validateField(username, /^[a-z0-9]+$/i, 'username-error');
+
+  const validateEmail = (email) =>
+    validateField(email, /^[a-z0-9._-]+@[a-z0-9.-]+\.[a-z]{2,6}$/, 'email-error');
+
+  const validateAge = (age) => {
+    const isValid = parseInt(age, 10) >= 16 && parseInt(age, 10) <= 90
+    document.getElementById('age-error').style.display = isValid ? 'none' : 'block';
+    return isValid;
+  };
+
+  const validateRequiredFields = () => {
+    let isValid = true;
+    if (!editData.gender) {
+      document.getElementById('gender-error').style.display = 'block';
+      isValid = false;
+    }
+    if (!editData.stream) {
+      document.getElementById('stream-error').style.display = 'block';
+      isValid = false;
+    }
+    if (editData.subject.length === 0) {
+      document.getElementById('subject-error').style.display = 'block';
+      isValid = false;
+    }
+    return isValid;
+  };
+
+  const handleStatusChange = (ind, val) => {
+    const updatedData = [...userData];
+    updatedData[ind].status = val;
+    setUserData(updatedData)
+    localStorage.setItem("data", JSON.stringify(updatedData))
+  }
+
+  const handleEdit = (ind) => {
+    setCheckEdit(!checkEdit)
+    setEditInd(ind)
+    setEditData({ ...userData[ind] })
+  }
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target
+    if (type === "checkbox") {
+      setEditData((prevData) => ({
+        ...prevData,
+        subject: checked
+          ? [...(prevData.subject), value]
+          : (prevData.subject).filter((sub) => sub !== value),
+      }));
+    }
+    else {
+      setEditData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }))
+    }
+  }
+
+  const handleSave = (e) => {
+    e.preventDefault()
+    if (validateUserName(editData.username) &&
+      validateEmail(editData.email) &&
+      validateAge(editData.age) &&
+      validateRequiredFields()
+    ) {
+      const updatedData = [...userData];
+      updatedData[editInd] = editData
+      setUserData(updatedData)
+      localStorage.setItem("data", JSON.stringify(updatedData))
+      setEditInd(null)
+      setEditData({})
+    }
+  }
+
+  const validateLocalEmail = (email) => {
+    const duplicateEmailCheck = document.getElementById('duplicate-error');
+    const user = JSON.parse(localStorage.getItem('data')) || [];
+    const emailExist = user.some((obj) => obj.email === email);
+    duplicateEmailCheck.style.display = emailExist ? 'block' : 'none';
+    return emailExist;
+  };
+
+  const mySearch = () => {
+    let input = document.getElementById("myInput")
+    let filter = input.value.toLowerCase();
+    // let div = document.getElementById('for-search')
+    let p = document.getElementsByTagName("card")
+    for (let i = 1; i < p.length; i++) {
+      let textVal = p[i].textContent || p[i].innerText
+      if (textVal.toLowerCase().indexOf(filter) > -1) {
+        p[i].style.display = "";
+      }
+      else {
+        p[i].style.display = "none"
+      }
+    }
+  }
+
+  const genderOptions = ["Male", "Female", "Other"]
+
+  const checkOption = [
+    { name: 'Physics ', key: 'physics', label: 'Physics ' },
+    { name: 'Chemistry ', key: 'chemistry', label: 'Chemistry ' },
+    { name: 'Math ', key: 'math', label: 'Math ' },
+    { name: 'Biology ', key: 'bio', label: 'Biology ' },
+  ];
 
   return (
     <div className="main_container">
@@ -58,7 +203,7 @@ const Project = () => {
                         <path d="M19 6.5H16V5.5C16 4.70435 15.6839 3.94129 15.1213 3.37868C14.5587 2.81607 13.7956 2.5 13 2.5H11C10.2044 2.5 9.44129 2.81607 8.87868 3.37868C8.31607 3.94129 8 4.70435 8 5.5V6.5H5C4.20435 6.5 3.44129 6.81607 2.87868 7.37868C2.31607 7.94129 2 8.70435 2 9.5V18.5C2 19.2956 2.31607 20.0587 2.87868 20.6213C3.44129 21.1839 4.20435 21.5 5 21.5H19C19.7956 21.5 20.5587 21.1839 21.1213 20.6213C21.6839 20.0587 22 19.2956 22 18.5V9.5C22 8.70435 21.6839 7.94129 21.1213 7.37868C20.5587 6.81607 19.7956 6.5 19 6.5ZM10 5.5C10 5.23478 10.1054 4.98043 10.2929 4.79289C10.4804 4.60536 10.7348 4.5 11 4.5H13C13.2652 4.5 13.5196 4.60536 13.7071 4.79289C13.8946 4.98043 14 5.23478 14 5.5V6.5H10V5.5ZM20 18.5C20 18.7652 19.8946 19.0196 19.7071 19.2071C19.5196 19.3946 19.2652 19.5 19 19.5H5C4.73478 19.5 4.48043 19.3946 4.29289 19.2071C4.10536 19.0196 4 18.7652 4 18.5V13C4.97544 13.3869 5.97818 13.7011 7 13.94V14.53C7 14.7952 7.10536 15.0496 7.29289 15.2371C7.48043 15.4246 7.73478 15.53 8 15.53C8.26522 15.53 8.51957 15.4246 8.70711 15.2371C8.89464 15.0496 9 14.7952 9 14.53V14.32C9.99435 14.4554 10.9965 14.5255 12 14.53C13.0035 14.5255 14.0057 14.4554 15 14.32V14.53C15 14.7952 15.1054 15.0496 15.2929 15.2371C15.4804 15.4246 15.7348 15.53 16 15.53C16.2652 15.53 16.5196 15.4246 16.7071 15.2371C16.8946 15.0496 17 14.7952 17 14.53V13.94C18.0218 13.7011 19.0246 13.3869 20 13V18.5ZM20 10.81C19.0274 11.2205 18.0244 11.5548 17 11.81V11.5C17 11.2348 16.8946 10.9804 16.7071 10.7929C16.5196 10.6054 16.2652 10.5 16 10.5C15.7348 10.5 15.4804 10.6054 15.2929 10.7929C15.1054 10.9804 15 11.2348 15 11.5V12.24C13.0113 12.54 10.9887 12.54 9 12.24V11.5C9 11.2348 8.89464 10.9804 8.70711 10.7929C8.51957 10.6054 8.26522 10.5 8 10.5C7.73478 10.5 7.48043 10.6054 7.29289 10.7929C7.10536 10.9804 7 11.2348 7 11.5V11.83C5.97562 11.5748 4.9726 11.2405 4 10.83V9.5C4 9.23478 4.10536 8.98043 4.29289 8.79289C4.48043 8.60536 4.73478 8.5 5 8.5H19C19.2652 8.5 19.5196 8.60536 19.7071 8.79289C19.8946 8.98043 20 9.23478 20 9.5V10.81Z" fill="black" />
                       </svg>
 
-                    </span> Projects</Link>
+                    </span> Users List</Link>
                   </li>
                   <li><Link to="/">
                     <span>
@@ -108,9 +253,9 @@ const Project = () => {
                       <button className="dropdown-toggle border-0 w-100 d-flex align-items-center" type="button"
                         data-bs-toggle="dropdown" aria-expanded="false">
                         <span className="d-flex align-items-center justify-content-center person_icon"><img
-                          src={person} alt="" /></span>
+                          src={loggedInUser.file} style={{ maxWidth: "42px", }} alt="" /></span>
                         <label className="person_name">
-                          Ravi Sharma<span className="d-block">ravi@braintechnosys.com</span>
+                          {loggedInUser.username}<span className="d-block">{loggedInUser.email}</span>
                         </label>
                       </button>
                       <ul className="dropdown-menu w-100">
@@ -131,6 +276,9 @@ const Project = () => {
           <div className="body_content">
             <div className="top_header d-flex align-items-center justify-content-between">
               <h1>Projects</h1>
+              {/* <div>
+                <input type="text" id="myInput" onKeyUp={mySearch} placeholder="search" />
+              </div> */}
               <div className="header_notification d-flex align-items-center gap-2">
                 <div className="filter-dropdown green-filter dropdown">
                   <button className="btn filter-btn green-filter-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -150,7 +298,7 @@ const Project = () => {
                   <p>02</p>
                 </div>
                 <div className="header_icon position-relative notification d-flex align-items-center justify-content-center">
-                  <svg onClick={handleLogout} style={{cursor: 'pointer'}} width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <svg onClick={handleLogout} style={{ cursor: 'pointer' }} width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M11.5408 11.9167L9.43242 14.0158C9.3465 14.1011 9.27831 14.2024 9.23177 14.3141C9.18523 14.4259 9.16127 14.5457 9.16127 14.6667C9.16127 14.7877 9.18523 14.9075 9.23177 15.0192C9.27831 15.1309 9.3465 15.2323 9.43242 15.3175C9.51763 15.4034 9.61902 15.4716 9.73072 15.5182C9.84243 15.5647 9.96224 15.5887 10.0833 15.5887C10.2043 15.5887 10.3241 15.5647 10.4358 15.5182C10.5475 15.4716 10.6489 15.4034 10.7341 15.3175L14.4008 11.6508C14.4842 11.5637 14.5496 11.4609 14.5933 11.3483C14.6849 11.1252 14.6849 10.8748 14.5933 10.6517C14.5496 10.5392 14.4842 10.4364 14.4008 10.3492L10.7341 6.68251C10.6486 6.59704 10.5472 6.52924 10.4355 6.48299C10.3238 6.43673 10.2041 6.41293 10.0833 6.41293C9.96238 6.41293 9.84269 6.43673 9.73102 6.48299C9.61935 6.52924 9.51789 6.59704 9.43242 6.68251C9.34695 6.76798 9.27915 6.86944 9.2329 6.98111C9.18664 7.09278 9.16284 7.21247 9.16284 7.33334C9.16284 7.45421 9.18664 7.5739 9.2329 7.68557C9.27915 7.79724 9.34695 7.89871 9.43242 7.98418L11.5408 10.0833H2.74992C2.5068 10.0833 2.27365 10.1799 2.10174 10.3518C1.92983 10.5237 1.83325 10.7569 1.83325 11C1.83325 11.2431 1.92983 11.4763 2.10174 11.6482C2.27365 11.8201 2.5068 11.9167 2.74992 11.9167H11.5408ZM10.9999 1.83334C9.28675 1.82569 7.60573 2.29829 6.14751 3.19752C4.6893 4.09675 3.51227 5.38663 2.74992 6.92084C2.64052 7.13965 2.62252 7.39295 2.69987 7.62502C2.77723 7.8571 2.94362 8.04894 3.16242 8.15834C3.38122 8.26774 3.63452 8.28575 3.8666 8.20839C4.09868 8.13103 4.29052 7.96465 4.39992 7.74584C4.97943 6.57555 5.86093 5.58124 6.95334 4.86567C8.04575 4.15009 9.30942 3.7392 10.6138 3.67547C11.9181 3.61174 13.2158 3.89747 14.3728 4.50314C15.5298 5.10882 16.504 6.01245 17.1949 7.12067C17.8857 8.22889 18.2681 9.50149 18.3025 10.8069C18.3368 12.1124 18.022 13.4034 17.3905 14.5464C16.7589 15.6895 15.8336 16.6432 14.7102 17.3089C13.5867 17.9746 12.3058 18.3283 10.9999 18.3333C9.63306 18.3393 8.29223 17.9597 7.1313 17.2382C5.97038 16.5166 5.03641 15.4824 4.43659 14.2542C4.32718 14.0354 4.13534 13.869 3.90327 13.7916C3.67119 13.7143 3.41789 13.7323 3.19909 13.8417C2.98028 13.9511 2.8139 14.1429 2.73654 14.375C2.65918 14.6071 2.67718 14.8604 2.78659 15.0792C3.51334 16.5417 4.61765 17.7836 5.98527 18.6762C7.35289 19.5689 8.93416 20.08 10.5655 20.1566C12.1969 20.2332 13.8191 19.8726 15.2644 19.1121C16.7097 18.3515 17.9255 17.2187 18.7861 15.8307C19.6468 14.4427 20.121 12.85 20.1597 11.2173C20.1984 9.58456 19.8002 7.97115 19.0063 6.54394C18.2124 5.11673 17.0516 3.92753 15.644 3.09936C14.2364 2.27118 12.6331 1.83411 10.9999 1.83334Z" fill="#83838C" />
                   </svg>
 
@@ -161,42 +309,138 @@ const Project = () => {
             <div className="contact-profile">
 
               <div className="row">
-                {userData.length > 0 ? (userData.map((user, ind) => (
-                  <div key={ind} className="col-lg-6">
-                  <div className="professional_info">
-                    <div className="project-card-top">
-                      <div className="project-card-heading d-flex align-items-center justify-content-between">
-                        <div className="body_heading2 mb-0">
-                          <h2 className="font-18 mb-0">{user.username}</h2>
-                          <p className="mb-0 body-sub-heading font-12">Created by:- <span>{user.email}</span></p>
-                        </div>
-                        <p className="mb-0 font-14 body-sub-heading ">Gender: <span> {user.gender}</span> </p>
+                {userData.length > 0 ? (userData.map((user, ind) => ((user.email !== loggedInUser.email) &&
+                  <div key={ind} id='for-search' className="col-lg-6" >
+                    <div className="professional_info">
+                      <div className="project-card-top">
+                        <div className="project-card-heading d-flex align-items-center justify-content-between">
+                          <div className="body_heading2 mb-0">
+                            <h2 className="font-18 mb-0">{user.username}</h2>
+                            <span>
+                              <button className="dropdown-toggle border-0 w-0 d-flex align-items-center" type="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                              </button>
+                              <ul className="dropdown-menu w-100">
+                                <li><Popup trigger={<span className="dropdown-item" onClick={() => handleEdit(ind)}>Update</span>}>
+                                  {editInd !== null && (
+                                    <form className='form-controller' onSubmit={handleSave}>
+                                      <div>Username:
+                                        <input type='text' name="username" value={editData.username} onChange={handleChange} onInput={validateUserName} placeholder='Enter Username' minLength={6} maxLength={20} />
+                                        <span id='username-error' style={{ display: "none" }}>Enter valid username</span>
+                                      </div><br />
+                                      <div>
+                                        Select Gender:
+                                        <select name="gender" value={editData.gender || ""} onChange={handleChange}>
+                                          <option value="">Select</option>
+                                          {genderOptions.map((val, ind) => (
+                                            <option key={ind} value={val}>
+                                              {val}
+                                            </option>
+                                          ))}
+                                        </select>
+                                        <span id='gender-error' style={{ display: 'none' }}>Select your gender</span>
+                                      </div><br />
+                                      <div>Age:
+                                        <input type='text' name="age" value={editData.age} onChange={handleChange} onInput={validateAge} />
+                                        <span id='age-error' style={{ display: 'none' }}>Age must be greater than 16 and less than 90</span>
+                                      </div><br />
+                                      <div>Email:
+                                        <input type='text' name="email" value={editData.email} onChange={handleChange} onInput={validateEmail && validateLocalEmail} />
+                                        <span id='email-error' style={{ display: "none" }}>Enter valid Email</span>
+                                        <span id='duplicate-error' style={{ display: "none" }}>Email already exist</span>
+                                      </div><br />
+                                      <div>
+                                        Stream:
+                                        <label>
+                                          <input
+                                            type="radio"
+                                            name="stream"
+                                            value="PCM"
+                                            checked={editData.stream === "PCM"}
+                                            onChange={handleChange}
+                                          />
+                                          PCM
+                                        </label>
+                                        <label>
+                                          <input
+                                            type="radio"
+                                            name="stream"
+                                            value="Commerce"
+                                            checked={editData.stream === "Commerce"}
+                                            onChange={handleChange}
+                                          />
+                                          Commerce
+                                        </label>
+                                        <label>
+                                          <input
+                                            type="radio"
+                                            name="stream"
+                                            value="Arts"
+                                            checked={editData.stream === "Arts"}
+                                            onChange={handleChange}
+                                          />
+                                          Arts
+                                        </label>
+                                        <span id='stream-error' style={{ display: 'none', color: 'red' }}>Select a stream</span>
+                                      </div><br />
+                                      <div>
+                                        Subjects:
+                                        {checkOption.map((it) => (
+                                          <label key={it.key}>
+                                            {it.label}
+                                            <input
+                                              type="checkbox"
+                                              name={it.name}
+                                              value={it.label}
+                                              checked={(editData.subject).includes(it.label)}
+                                              onChange={handleChange}
+                                            />
+                                          </label>
+                                        ))}
+                                        <span id='subject-error' style={{ display: 'none', color: 'red' }}>Select at least one subject</span>
+                                      </div>
+                                      <button type="submit">Update</button>
+                                    </form>
+                                  )}
+                                </Popup>
+                                </li>
+                                <li><span className="dropdown-item" onClick={() => handleDelete(ind)}>Delete</span></li>
+                              </ul></span>
+                            <p className="mb-0 body-sub-heading font-12">Created by:- <span>{user.email}</span></p>
+                          </div>
+                          <p className="mb-0 font-14 body-sub-heading ">Gender: <span> {user.gender}</span> </p>
 
-                      </div>
-                      <div className="technology-heading d-flex align-items-center justify-content-between">
-                        <p className="my-2 font-14 body-sub-heading "><span className="me-2"><img src={user.file} style={{ maxWidth: "30px", }} alt="" /></span>Stream: <span> {user.stream}</span></p>
-                        <p className="my-2 font-14 body-sub-heading ">Age: <span>{user.age}</span>  </p>
-                      </div>
-                      <div className="project-progress mt-2">
-                        <div className="progress" role="progressbar" aria-label="Basic example" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
-                          <div className="progress-bar" style={{ width: '25%' }}></div>
+                        </div>
+                        <div className="technology-heading d-flex align-items-center justify-content-between">
+                          <p className="my-2 font-14 body-sub-heading "><span className="me-2"><img src={user.file} style={{ maxWidth: "30px", }} alt="" /></span>Stream: <span> {user.stream}</span></p>
+                          <p className="my-2 font-14 body-sub-heading ">Age: <span>{user.age}</span>  </p>
+                        </div>
+                        <div className="project-progress mt-2">
+                          <div className="progress" role="progressbar" aria-label="Basic example" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
+                            <div className="progress-bar" style={{ width: '25%' }}></div>
 
+                          </div>
+                        </div>
+                        <div className=" d-flex align-items-center justify-content-between">
+                          <p className="my-2 font-14 body-sub-heading ">Subjects: <span> {user.subject.join(", ")}</span></p>
+                          <p className="my-2 font-14 body-sub-heading ">Status <span><select
+                            value={user.status || "Active"}
+                            onChange={(e) => handleStatusChange(ind, e.target.value)}
+                          >
+                            <option value="Active">Active</option>
+                            <option value="Inactive">Inactive</option>
+                          </select> </span> </p>
                         </div>
                       </div>
-                      <div className=" d-flex align-items-center justify-content-between">
-                        <p className="my-2 font-14 body-sub-heading ">Subjects: <span> {user.subject.join(", ")}</span></p>
-                        <p className="my-2 font-14 body-sub-heading ">Status <span>{user.status} </span> </p>
-                      </div>
-                    </div>
-                    {/* <div className="project-bottom">
+                      {/* <div className="project-bottom">
                       <p className="font-14 mb-0">Next Task:</p>
                       <p className="font-14 mb-0 color-para">Deliverables will be drafted at the time of the design phase</p>
                     </div> */}
 
+                    </div>
                   </div>
-                </div>
                 )
-                )): (<h1>No data found</h1>)}
+                )) : (<h1>No data found</h1>)}
                 {/* <div className="col-lg-6">
                   <div className="professional_info">
                     <div className="project-card-top">
@@ -234,6 +478,86 @@ const Project = () => {
                 </div> */}
               </div>
 
+              {/* {editInd !== null && (
+                <form className='form-controller' onSubmit={handleSave}>
+                  <div>Username:
+                    <input type='text' name="username" value={editData.username} onChange={handleChange} onInput={validateUserName} placeholder='Enter Username' minLength={6} maxLength={20} />
+                    <span id='username-error' style={{ display: "none" }}>Enter valid username</span>
+                  </div><br />
+                  <div>
+                    Select Gender:
+                    <select name="gender" value={editData.gender || ""} onChange={handleChange}>
+                      <option value="">Select</option>
+                      {genderOptions.map((val, ind) => (
+                        <option key={ind} value={val}>
+                          {val}
+                        </option>
+                      ))}
+                    </select>
+                    <span id='gender-error' style={{ display: 'none' }}>Select your gender</span>
+                  </div><br />
+                  <div>Age:
+                    <input type='text' name="age" value={editData.age} onChange={handleChange} onInput={validateAge} />
+                    <span id='age-error' style={{ display: 'none' }}>Age must be greater than 16 and less than 90</span>
+                  </div><br />
+                  <div>Email:
+                    <input type='text' name="email" value={editData.email} onChange={handleChange} onInput={validateEmail && validateLocalEmail} />
+                    <span id='email-error' style={{ display: "none" }}>Enter valid Email</span>
+                    <span id='duplicate-error' style={{ display: "none" }}>Email already exist</span>
+                  </div><br />
+                  <div>
+                    Stream:
+                    <label>
+                      <input
+                        type="radio"
+                        name="stream"
+                        value="PCM"
+                        checked={editData.stream === "PCM"}
+                        onChange={handleChange}
+                      />
+                      PCM
+                    </label>
+                    <label>
+                      <input
+                        type="radio"
+                        name="stream"
+                        value="Commerce"
+                        checked={editData.stream === "Commerce"}
+                        onChange={handleChange}
+                      />
+                      Commerce
+                    </label>
+                    <label>
+                      <input
+                        type="radio"
+                        name="stream"
+                        value="Arts"
+                        checked={editData.stream === "Arts"}
+                        onChange={handleChange}
+                      />
+                      Arts
+                    </label>
+                    <span id='stream-error' style={{ display: 'none', color: 'red' }}>Select a stream</span>
+                  </div><br />
+                  <div>
+                    Subjects:
+                    {checkOption.map((it) => (
+                      <label key={it.key}>
+                        {it.label}
+                        <input
+                          type="checkbox"
+                          name={it.name}
+                          value={it.label}
+                          checked={(editData.subject).includes(it.label)}
+                          onChange={handleChange}
+                        />
+                      </label>
+                    ))}
+                    <span id='subject-error' style={{ display: 'none', color: 'red' }}>Select at least one subject</span>
+                  </div>
+                  <button type="submit">Update</button>
+                </form>
+              )} */}
             </div>
           </div>
         </div>
