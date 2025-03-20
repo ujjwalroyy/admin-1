@@ -67,11 +67,11 @@ const Project = () => {
         const allUsers = JSON.parse(storedData);
         console.log("All Users", allUsers);
 
-        const filteredUsers = allUsers
-          .filter(
-            (u) => u.email !== loggedInUserData.email
-          );
-        setUserData(filteredUsers);
+        // const filteredUsers = allUsers
+          // .filter(
+          //   (u) => u.email !== loggedInUserData.email
+          // );
+        setUserData(allUsers);
         console.log("Usersssss", userData);
       }
     } else {
@@ -176,7 +176,7 @@ const Project = () => {
     let filter = input.value.toLowerCase();
     let con = document.getElementById("for-search")
     console.log(con.length);
-    
+
     let p = document.getElementsByTagName("p")
     for (let i = 1; i < p.length; i++) {
       let textVal = p[i].textContent || p[i].innerText
@@ -194,7 +194,7 @@ const Project = () => {
     e.preventDefault()
     if (validateUserName(editData.username) &&
       validateEmail(editData.email) &&
-      validateAge(editData.age) && 
+      validateAge(editData.age) &&
       // validateLocalEmail(editData.email) &&
       validateRequiredFields()
     ) {
@@ -339,7 +339,7 @@ const Project = () => {
       // handleClear();
       handleFormClose()
     }
-    
+
   };
 
   return (
@@ -469,7 +469,7 @@ const Project = () => {
                   {/* <img src={notification} alt='' /> */}
                   {/* <span className="notification_alert"></span> */}
                   {/* <p>02</p> */}
-                  <h6 onClick={handleForm} style={{cursor: 'pointer'}}>Add</h6>
+                  <h6 onClick={handleForm} style={{ cursor: 'pointer' }}>Add</h6>
                 </div>
                 <div className="header_icon position-relative notification d-flex align-items-center justify-content-center">
                   <svg onClick={handleLogout} style={{ cursor: 'pointer' }} width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -483,7 +483,7 @@ const Project = () => {
             <div className="contact-profile">
 
               <div className="row">
-                {userData.length > 0 ? (userData.map((user, ind) => ((user.email !== loggedInUser.email) &&
+                {userData.length > 0 ? (currPage.map((user, ind) => (
                   <div key={ind} id='for-search' className="col-lg-6" >
                     <div className="professional_info">
                       <div className="project-card-top">
@@ -497,8 +497,8 @@ const Project = () => {
                                 </button>
                                 <ul className="dropdown-menu w-100">
                                   <li>
-                                    <span className="dropdown-item" style={{cursor:'pointer'}} onClick={() => handleEdit(ind)}>Update</span></li>
-                                  <li><span className="dropdown-item" style={{cursor:'pointer'}} onClick={() => handleShowDelete(ind)}>Delete</span></li>
+                                    <span className="dropdown-item" style={{ cursor: 'pointer' }} onClick={() => handleEdit(ind)}>Update</span></li>
+                                  <li><span className="dropdown-item" style={{ cursor: 'pointer' }} onClick={() => handleShowDelete(ind)}>Delete</span></li>
                                 </ul>
                               </span>
                             </div>
@@ -572,7 +572,7 @@ const Project = () => {
                   </div>
                 </div> */}
               </div>
-              
+
 
 
 
@@ -872,14 +872,14 @@ const Project = () => {
                   </Button>
                 </Modal.Footer>
               </Modal>
-              
-              
+
+
             </div>
           </div>
-          {/* <Pagination items={userData} pageLimit={pageLimit} setPageItems={setCurrPage} /> */}
+          <Pagination items={userData} pageLimit={pageLimit} setPageItems={setCurrPage} />
         </div>
       </div>
-      
+
     </div>
   )
 }
