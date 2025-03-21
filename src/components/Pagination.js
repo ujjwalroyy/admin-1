@@ -9,7 +9,7 @@ const Pagination = (props) => {
 
     useEffect(() => {
         props.setPageItems(pageData);
-    }, [pageNumber, changePage]);
+    }, [pageNumber]);
 
     return (
         <div>
@@ -17,7 +17,7 @@ const Pagination = (props) => {
             <input
                 value={pageNumber}
                 onChange={(e) => {
-                    changePage(e.target.valueAsNumber);
+                    changePage(e.target.value);
                 }}
                 type="number"
             />

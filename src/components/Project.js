@@ -5,16 +5,17 @@ import { Link, useNavigate } from 'react-router-dom'
 import logo2 from "./image/BT-logo2.png"
 import clock from "./image/clock.png"
 import angleDown from "./image/angle-down.png"
-import notification from "./image/notification.svg"
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Pagination from './Pagination'
+import axios from 'axios'
 
 const Project = () => {
   const [userData, setUserData] = useState([]);
   const [editInd, setEditInd] = useState(null)
   const [editData, setEditData] = useState({})
+  const [urlData, setUrlData] = useState([])
   const [checkEdit, setCheckEdit] = useState(false)
   const [loggedInUser, setLoggedInUser] = useState('');
   const [show, setShow] = useState(false);
@@ -35,7 +36,7 @@ const Project = () => {
   const genderInputRef = useRef()
   const navigate = useNavigate()
 
-  const pageLimit = 1;
+  const pageLimit = 2;
 
   const handleLogout = () => {
     localStorage.removeItem("isLoggedIn");
@@ -47,6 +48,7 @@ const Project = () => {
     setShowDelete(true);
     setDeleteInd(ind)
   }
+
   const handleCloseDelete = () => setShowDelete(false);
 
   const handleClose = () => setShow(false);
@@ -62,16 +64,16 @@ const Project = () => {
     if (user) {
       const loggedInUserData = user
       setLoggedInUser(user);
-      console.log("+++++++++++++++++++++", loggedInUser);
+      console.log("+++++++++++++++++++++========", loggedInUser);
       if (storedData) {
         const allUsers = JSON.parse(storedData);
         console.log("All Users", allUsers);
 
-        // const filteredUsers = allUsers
-        // .filter(
-        //   (u) => u.email !== loggedInUserData.email
-        // );
-        setUserData(allUsers);
+        const filteredUsers = allUsers
+          .filter(
+            (u) => u.email !== loggedInUserData.email
+          );
+        setUserData(filteredUsers);
         console.log("Usersssss", userData);
       }
     } else {
@@ -79,7 +81,7 @@ const Project = () => {
         setUserData(JSON.parse(storedData));
       }
     }
-  }, []);
+  }, [loggedInUser, userData]);
 
   const handleDelete = (ind) => {
     const updatedData = userData.filter((_, i) => i !== ind)
@@ -89,8 +91,15 @@ const Project = () => {
     localStorage.setItem("data", JSON.stringify(updatedData))
   }
 
+  useEffect(() => {
+    axios('https://jsonplaceholder.typicode.com/users').then(res => {
+      setUrlData(res.data)
+    }).catch(err => {
+      console.log("error ", err);
 
+    })
 
+  }, [])
 
   const validateEmail = (email) =>
     validateField(email, /^[a-z0-9._-]+@[a-z0-9.-]+\.[a-z]{2,6}$/, 'email-error');
@@ -172,22 +181,18 @@ const Project = () => {
   }
 
   const mySearch = () => {
-    let input = document.getElementById("myInput")
+    let input = document.getElementById("myInput");
     let filter = input.value.toLowerCase();
-    let con = document.getElementById("for-search")
-    console.log(con.length);
+    let cards = document.querySelectorAll("#for-search");
+    cards.forEach((card) => {
+      let textVal = card.innerText.toLowerCase();
 
-    let p = document.getElementsByTagName("p")
-    for (let i = 1; i < p.length; i++) {
-      let textVal = p[i].textContent || p[i].innerText
-      console.log(textVal);
-      if (textVal.toLowerCase().indexOf(filter) > -1) {
-        p[i].style.display = "";
+      if (textVal.indexOf(filter) > -1) {
+        card.style.display = "";
+      } else {
+        card.style.display = "none";
       }
-      else {
-        p[i].style.display = "none"
-      }
-    }
+    });
   }
 
   const handleSave = (e) => {
@@ -253,8 +258,6 @@ const Project = () => {
     document.getElementById('cPassword-error').style.display = 'none';
   };
 
-
-
   const handleProfilePic = (val) => {
     const file = val.target.files[0]
     if (file) {
@@ -281,36 +284,31 @@ const Project = () => {
     return isValid;
   };
 
-
-
   const handleGenderChange = (val) => {
     setGender(val);
     document.getElementById('gender-error').style.display = val === 'select' ? 'block' : 'none';
   };
 
-
-
-
   const validatePassword = (password) =>
     validateField(password, /^[a-zA-Z0-9!@#$%^&*]{6,16}$/, 'password-error');
 
-  const handleClear = () => {
-    setUserName('');
-    setAge('');
-    setEmail('');
-    setPassword('');
-    setConfirmPassword('');
-    setSubject(new Map());
-    setFile(null);
-    setSelectedValue('');
-    setGender('');
-    if (genderInputRef.current) {
-      genderInputRef.current.value = '';
-    }
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-  };
+  // const handleClear = () => {
+  //   setUserName('');
+  //   setAge('');
+  //   setEmail('');
+  //   setPassword('');
+  //   setConfirmPassword('');
+  //   setSubject(new Map());
+  //   setFile(null);
+  //   setSelectedValue('');
+  //   setGender('');
+  //   if (genderInputRef.current) {
+  //     genderInputRef.current.value = '';
+  //   }
+  //   if (fileInputRef.current) {
+  //     fileInputRef.current.value = '';
+  //   }
+  // };
 
   const storeData = (e) => {
     e.preventDefault();
@@ -339,7 +337,6 @@ const Project = () => {
       // handleClear();
       handleFormClose()
     }
-
   };
 
   return (
@@ -367,7 +364,7 @@ const Project = () => {
                       <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M17.5 16.6667C17.5 16.8877 17.4122 17.0996 17.2559 17.2559C17.0996 17.4122 16.8877 17.5 16.6667 17.5H3.33333C3.11232 17.5 2.90036 17.4122 2.74408 17.2559C2.5878 17.0996 2.5 16.8877 2.5 16.6667V7.76166C2.49995 7.63578 2.52842 7.51153 2.58326 7.39823C2.63811 7.28493 2.71791 7.18553 2.81667 7.10749L9.48333 1.84832C9.63046 1.73206 9.81249 1.66882 10 1.66882C10.1875 1.66882 10.3695 1.73206 10.5167 1.84832L17.1833 7.10666C17.2822 7.18478 17.3621 7.28432 17.4169 7.39777C17.4718 7.51123 17.5002 7.63564 17.5 7.76166V16.6667ZM5.83333 9.99999C5.83333 11.1051 6.27232 12.1649 7.05372 12.9463C7.83512 13.7277 8.89493 14.1667 10 14.1667C11.1051 14.1667 12.1649 13.7277 12.9463 12.9463C13.7277 12.1649 14.1667 11.1051 14.1667 9.99999H12.5C12.5 10.663 12.2366 11.2989 11.7678 11.7678C11.2989 12.2366 10.663 12.5 10 12.5C9.33696 12.5 8.70107 12.2366 8.23223 11.7678C7.76339 11.2989 7.5 10.663 7.5 9.99999H5.83333Z" fill="black" />
                       </svg>
-                    </span> Dashboard</Link>
+                    </span > Dashboard</Link>
                   </li>
                   <li className="without_label">Workspace</li>
                   <li><Link to="/" className="active">
@@ -536,126 +533,49 @@ const Project = () => {
                   </div>
                 )
                 )) : (<h1>No data found</h1>)}
-                {/* <div className="col-lg-6">
-                  <div className="professional_info">
-                    <div className="project-card-top">
-                      <div className="project-card-heading d-flex align-items-center justify-content-between">
-                        <div className="body_heading2 orange mb-0">
-                          <h2 className="font-18 mb-0">Shutter Management</h2>
-                          <p className="mb-0 body-sub-heading font-12">Created by:- <span>Vineet Tomer</span></p>
-                        </div>
-                        <p className="mb-0 font-14 body-sub-heading ">Managed By: <span> Vipin Paul</span> </p>
 
-                      </div>
-                      <div className="technology-heading d-flex align-items-center justify-content-between">
-                        <p className="my-2 font-14 body-sub-heading "><span className="me-2"><img src={globe} alt="" /></span>Technology: <span> Web Design, React, Php</span></p>
-                        <p className="my-2 font-14 body-sub-heading ">Milestones: <span>05</span>  </p>
-                      </div>
-                      <div className="project-progress mt-2">
-                        <div className="progress" role="progressbar" aria-label="Basic example" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
-                          <div className="progress-bar orange" style={{ width: '25%' }}></div>
-
-                        </div>
-                      </div>
-                      <div className=" d-flex align-items-center justify-content-between">
-                        <p className="my-2 font-14 body-sub-heading ">Current Milestone: <span> 02</span></p>
-                        <p className="my-2 font-14 body-sub-heading ">20% <span>Complete </span> </p>
-                      </div>
-                    </div>
-
-
-                    <div className="project-bottom">
-                      <p className="font-14 mb-0">Next Task:</p>
-                      <p className="font-14 mb-0 color-para">Deliverables will be drafted at the time of the design phase</p>
-                    </div>
-
-                  </div>
-                </div> */}
               </div>
 
-
-
-
-              {/* {editInd !== null && (
-                <form className='form-controller' onSubmit={handleSave}>
-                  <div>Username:
-                    <input type='text' name="username" value={editData.username} onChange={handleChange} onInput={validateUserName} placeholder='Enter Username' minLength={6} maxLength={20} />
-                    <span id='username-error' style={{ display: "none" }}>Enter valid username</span>
-                  </div><br />
-                  <div>
-                    Select Gender:
-                    <select name="gender" value={editData.gender || ""} onChange={handleChange}>
-                      <option value="">Select</option>
-                      {genderOptions.map((val, ind) => (
-                        <option key={ind} value={val}>
-                          {val}
-                        </option>
-                      ))}
-                    </select>
-                    <span id='gender-error' style={{ display: 'none' }}>Select your gender</span>
-                  </div><br />
-                  <div>Age:
-                    <input type='text' name="age" value={editData.age} onChange={handleChange} onInput={validateAge} />
-                    <span id='age-error' style={{ display: 'none' }}>Age must be greater than 16 and less than 90</span>
-                  </div><br />
-                  <div>Email:
-                    <input type='text' name="email" value={editData.email} onChange={handleChange} onInput={validateEmail && validateLocalEmail} />
-                    <span id='email-error' style={{ display: "none" }}>Enter valid Email</span>
-                    <span id='duplicate-error' style={{ display: "none" }}>Email already exist</span>
-                  </div><br />
-                  <div>
-                    Stream:
-                    <label>
-                      <input
-                        type="radio"
-                        name="stream"
-                        value="PCM"
-                        checked={editData.stream === "PCM"}
-                        onChange={handleChange}
-                      />
-                      PCM
-                    </label>
-                    <label>
-                      <input
-                        type="radio"
-                        name="stream"
-                        value="Commerce"
-                        checked={editData.stream === "Commerce"}
-                        onChange={handleChange}
-                      />
-                      Commerce
-                    </label>
-                    <label>
-                      <input
-                        type="radio"
-                        name="stream"
-                        value="Arts"
-                        checked={editData.stream === "Arts"}
-                        onChange={handleChange}
-                      />
-                      Arts
-                    </label>
-                    <span id='stream-error' style={{ display: 'none', color: 'red' }}>Select a stream</span>
-                  </div><br />
-                  <div>
-                    Subjects:
-                    {checkOption.map((it) => (
-                      <label key={it.key}>
-                        {it.label}
-                        <input
-                          type="checkbox"
-                          name={it.name}
-                          value={it.label}
-                          checked={(editData.subject).includes(it.label)}
-                          onChange={handleChange}
-                        />
-                      </label>
-                    ))}
-                    <span id='subject-error' style={{ display: 'none', color: 'red' }}>Select at least one subject</span>
-                  </div>
-                  <button type="submit">Update</button>
-                </form>
-              )} */}
+              <table className="table-container">
+                <thead>
+                  <tr>
+                    <th>id</th>
+                    <th>name</th>
+                    <th>username</th>
+                    <th>email</th>
+                    <th>street</th>
+                    <th>suite</th>
+                    <th>city</th>
+                    <th>zipcode</th>
+                    <th>lat</th>
+                    <th>lng</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {urlData.length > 0 ? (
+                    urlData.map((user, ind) => (
+                      <tr style={{ border: '1px solid black' }} key={ind}>
+                        <td>{user.id}</td>
+                        <td>{user.username}</td>
+                        <td>{user.email}</td>
+                        <td>{user.name}</td>
+                        <td>{user.address.street}</td>
+                        <td>{user.address.suite}</td>
+                        <td>{user.address.city}</td>
+                        <td>{user.address.zipcode}</td>
+                        <td>{user.address.geo.lat}</td>
+                        <td>{user.address.geo.lng}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="9">
+                        <h1>No data available</h1>
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
 
               {editInd !== null && (
                 <Modal show={show} onHide={handleClose}>
