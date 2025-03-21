@@ -68,9 +68,9 @@ const Project = () => {
         console.log("All Users", allUsers);
 
         // const filteredUsers = allUsers
-          // .filter(
-          //   (u) => u.email !== loggedInUserData.email
-          // );
+        // .filter(
+        //   (u) => u.email !== loggedInUserData.email
+        // );
         setUserData(allUsers);
         console.log("Usersssss", userData);
       }
