@@ -1,11 +1,13 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 
-import './css/custom.css'
-import './css/media.css'
+import '../css/custom.css'
+import '../css/media.css'
 
-import logo from './image/BT-logo.png'
-import correct from './image/correct.png'
+import logo from '../image/BT-logo.png'
+import correct from '../image/correct.png'
+import { useDispatch } from 'react-redux'
+import { isAuthenticated } from '../features/authSlice'
 
 const LoginPage = () => {
 
@@ -14,6 +16,8 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false)
 
   const navigate = useNavigate()
+
+  const dispatch = useDispatch()
 
   // console.log("User", JSON.parse(localStorage.getItem('isLoggedIn'))); // console.log("set", typeof(localStorage.getItem('isLoggedIn')));
 
@@ -36,8 +40,14 @@ const LoginPage = () => {
           passwordCheck = true;
         }
         if (val.email === email && val.password === password) {
-          localStorage.setItem('isLoggedIn', 'true');
-          localStorage.setItem('user', JSON.stringify(val));
+          const isUser = {
+            username: val.username,
+            email,
+            file: val.file
+          }
+          dispatch(isAuthenticated(isUser))
+          // localStorage.setItem('isLoggedIn', 'true');
+          // localStorage.setItem('user', JSON.stringify(val));
           navigate('/projects');
         }
       });

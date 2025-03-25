@@ -1,10 +1,11 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import LoginPage from './components/LoginPage';
-import Project from './components/Project';
-import ProjectDetails from './components/ProjectDetails';
-import PrivateRoute from './components/PrivateRoute';
-import HandleLoginRoute from './components/HandleLoginRoute';
-import AddTasks from './components/AddTasks';
+import LoginPage from './components/Pages/LoginPage';
+import Project from './components/Pages/Project';
+import ProjectDetails from './components/Pages/ProjectDetails';
+import PrivateRoute from './components/PrivateRoutes/PrivateRoute';
+import HandleLoginRoute from './components/PrivateRoutes/HandleLoginRoute';
+import AddTasks from './components/Tasks/AddTasks';
+import HomePage from './components/Pages/HomePage';
 
 function App() {
   // const isLoggedIn = localStorage.getItem('isLoggedIn')
@@ -15,6 +16,7 @@ function App() {
 
       <BrowserRouter>
         <Routes>
+        <Route path='/' element={<HomePage />} />
           <Route path='/login' element={<HandleLoginRoute Component={LoginPage} />} />
           <Route path='/projects' element={<PrivateRoute Component={Project} />} />
           {/* <Route path='/projects' element={isLoggedIn === true ? <Project/> : navigate('/login)}/> */}

@@ -1,0 +1,466 @@
+import React, { useEffect, useState } from 'react'
+import '../css/custom.css'
+import '../css/media.css'
+import Form from 'react-bootstrap/Form';
+import Modal from 'react-bootstrap/Modal';
+import Button from 'react-bootstrap/Button';
+// import Pagination from './Pagination'
+import { useDispatch, useSelector } from 'react-redux'
+import {  updateUser } from '../features/userSlice'
+import { getUsers }
+  from '../features/apiSlice'
+import Sideer from '../sider/Sideer'
+import Header from '../Header/Header'
+
+const Project = () => {
+  const dispatch = useDispatch()
+  const [userData, setUserData] = useState([]);
+  const [editInd, setEditInd] = useState(null)
+  const [editData, setEditData] = useState({})
+  const [checkEdit, setCheckEdit] = useState(false)
+  const [loggedInUser, setLoggedInUser] = useState('');
+  const [show, setShow] = useState(false);
+  const [showDelete, setShowDelete] = useState(false)
+  const [deleteInd, setDeleteInd] = useState(null)
+  // const [currPage, setCurrPage] = useState([])
+  const { data, isLoading, isError } = useSelector((state) => state.api)
+
+  // const pageLimit = 2;
+
+  
+
+
+  const handleShowDelete = (ind) => {
+    setShowDelete(true);
+    setDeleteInd(ind)
+  }
+
+  const handleCloseDelete = () => setShowDelete(false);
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+
+
+  useEffect(() => {
+    const storedData = localStorage.getItem("data");
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (user) {
+      const loggedInUserData = user
+      setLoggedInUser(user);
+      console.log("+++++++++++++++++++++========", loggedInUser);
+      if (storedData) {
+        const allUsers = JSON.parse(storedData);
+        console.log("All Users", allUsers);
+
+        const filteredUsers = allUsers
+          .filter(
+            (u) => u.email !== loggedInUserData.email
+          );
+        setUserData(filteredUsers);
+        console.log("Usersssss", userData);
+      }
+    } else {
+      if (storedData) {
+        setUserData(JSON.parse(storedData));
+      }
+    }
+  }, [loggedInUser, userData, editData]);
+
+  const handleDelete = (ind) => {
+    const updatedData = userData.filter((_, i) => i !== ind)
+    setUserData(updatedData)
+    handleCloseDelete()
+    setDeleteInd(null)
+    localStorage.setItem("data", JSON.stringify(updatedData))
+  }
+
+  useEffect(() => {
+    // axios('https://jsonplaceholder.typicode.com/users').then(res => {
+    //   setUrlData(res.data)
+    // }).catch(err => {
+    //   console.log("error ", err);
+    // })
+    dispatch(getUsers())
+  }, [dispatch])
+
+
+
+  const validateEmail = (email) =>
+    validateField(email, /^[a-z0-9._-]+@[a-z0-9.-]+\.[a-z]{2,6}$/, 'email-error');
+
+  const validateAge = (age) => {
+    const isValid = parseInt(age, 10) >= 16 && parseInt(age, 10) <= 90
+    document.getElementById('age-error').style.display = isValid ? 'none' : 'block';
+    return isValid;
+  };
+
+
+
+  const validateRequiredFields = () => {
+    let isValid = true;
+    if (!editData.gender) {
+      document.getElementById('gender-error').style.display = 'block';
+      isValid = false;
+    }
+    if (!editData.stream) {
+      document.getElementById('stream-error').style.display = 'block';
+      isValid = false;
+    }
+    if (editData.subject.length === 0) {
+      document.getElementById('subject-error').style.display = 'block';
+      isValid = false;
+    }
+    return isValid;
+  };
+
+  const handleStatusChange = (ind, val) => {
+    const updatedData = [...userData];
+    updatedData[ind].status = val;
+    setUserData(updatedData)
+    localStorage.setItem("data", JSON.stringify(updatedData))
+  }
+
+  const handleEdit = (ind) => {
+    handleShow()
+    setCheckEdit(!checkEdit)
+    setEditInd(ind)
+    setEditData({ ...userData[ind] })
+  }
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target
+    if (type === "checkbox") {
+      setEditData((prevData) => ({
+        ...prevData,
+        subject: checked
+          ? [...(prevData.subject), value]
+          : (prevData.subject).filter((sub) => sub !== value),
+      }));
+    }
+    else {
+      setEditData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }))
+    }
+  }
+
+  
+  const handleSave = (e) => {
+    e.preventDefault()
+    if (validateUserName(editData.username) &&
+      validateEmail(editData.email) &&
+      validateAge(editData.age) &&
+      // validateLocalEmail(editData.email) &&
+      validateRequiredFields()
+    ) {
+
+      editData.index = editInd
+      dispatch(updateUser(editData))
+      handleClose()
+      setEditInd(null)
+      setEditData({})
+    }
+  }
+
+
+
+  const validateLocalEmail = (email) => {
+    const duplicateEmailCheck = document.getElementById('duplicate-error');
+    const user = JSON.parse(localStorage.getItem('data')) || [];
+    const emailExist = user.some((obj) => obj.email === email);
+    duplicateEmailCheck.style.display = emailExist ? 'block' : 'none';
+    return emailExist;
+  };
+
+  const genderOptions = ["Male", "Female", "Other"]
+
+  const checkOption = [
+    { name: 'Physics ', key: 'physics', label: 'Physics ' },
+    { name: 'Chemistry ', key: 'chemistry', label: 'Chemistry ' },
+    { name: 'Math ', key: 'math', label: 'Math ' },
+    { name: 'Biology ', key: 'bio', label: 'Biology ' },
+  ];
+
+
+
+
+  const validateField = (field, regex, errorId) => {
+    const isValid = regex.test(field);
+    document.getElementById(errorId).style.display = isValid ? 'none' : 'block';
+    return isValid;
+  };
+
+  const validateUserName = (username) =>
+    validateField(username, /^[a-z0-9]+$/i, 'username-error');
+
+  // const comparePassword = (password, confirmPassword) => {
+  //   const isValid = password === confirmPassword;
+  //   document.getElementById('cPassword-error').style.display = isValid ? 'none' : 'block';
+  //   return isValid;
+  // };
+
+ 
+
+  // const validatePassword = (password) =>
+  //   validateField(password, /^[a-zA-Z0-9!@#$%^&*]{6,16}$/, 'password-error');
+
+  // const handleClear = () => {
+  //   setUserName('');
+  //   setAge('');
+  //   setEmail('');
+  //   setPassword('');
+  //   setConfirmPassword('');
+  //   setSubject(new Map());
+  //   setFile(null);
+  //   setSelectedValue('');
+  //   setGender('');
+  //   if (genderInputRef.current) {
+  //     genderInputRef.current.value = '';
+  //   }
+  //   if (fileInputRef.current) {
+  //     fileInputRef.current.value = '';
+  //   }
+  // };
+
+
+
+  return (
+    <div className="main_container">
+      <div className="limani_body">
+        <Sideer />
+        <div className="intersight_content">
+
+          <div className="body_content">
+           <Header/>
+            <div className="contact-profile">
+
+              <div className="row">
+                {userData.length > 0 ? (userData.map((user, ind) => (
+                  <div key={ind} id='for-search' className="col-lg-6" >
+                    <div className="professional_info">
+                      <div className="project-card-top">
+                        <div className="project-card-heading d-flex align-items-center justify-content-between">
+                          <div className="body_heading2 mb-0 ">
+                            <div className='d-flex'>
+                              <h2 className="font-18 mb-0">{user.username}</h2>
+                              <span className=''>
+                                <button className="dropdown-toggle border-0 w-0 d-flex align-items-center" type="button"
+                                  data-bs-toggle="dropdown" aria-expanded="false">
+                                </button>
+                                <ul className="dropdown-menu w-100">
+                                  <li>
+                                    <span className="dropdown-item" style={{ cursor: 'pointer' }} onClick={() => handleEdit(ind)}>Update</span></li>
+                                  <li><span className="dropdown-item" style={{ cursor: 'pointer' }} onClick={() => handleShowDelete(ind)}>Delete</span></li>
+                                </ul>
+                              </span>
+                            </div>
+                            <p className="mb-0 body-sub-heading font-12">Created by:- <span>{user.email}</span></p>
+                          </div>
+                          <p className="mb-0 font-14 body-sub-heading ">Gender: <span> {user.gender}</span> </p>
+
+                        </div>
+                        <div className="technology-heading d-flex align-items-center justify-content-between">
+                          <p className="my-2 font-14 body-sub-heading "><span className="me-2"><img src={user.file} style={{ maxWidth: "30px", }} alt="" /></span>Stream: <span> {user.stream}</span></p>
+                          <p className="my-2 font-14 body-sub-heading ">Age: <span>{user.age}</span>  </p>
+                        </div>
+                        <div className="project-progress mt-2">
+                          <div className="progress" role="progressbar" aria-label="Basic example" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
+                            <div className="progress-bar" style={{ width: '25%' }}></div>
+                          </div>
+                        </div>
+                        <div className=" d-flex align-items-center justify-content-between">
+                          <p className="my-2 font-14 body-sub-heading ">Subjects: <span> {user.subject.join(", ")}</span></p>
+                          <p className="my-2 font-14 body-sub-heading ">Status <span><select
+                            value={user.status || "Active"}
+                            onChange={(e) => handleStatusChange(ind, e.target.value)}
+                          >
+                            <option value="Active">Active</option>
+                            <option value="Inactive">Inactive</option>
+                          </select> </span> </p>
+                        </div>
+                      </div>
+                      {/* <div className="project-bottom">
+                      <p className="font-14 mb-0">Next Task:</p>
+                      <p className="font-14 mb-0 color-para">Deliverables will be drafted at the time of the design phase</p>
+                    </div> */}
+
+                    </div>
+                  </div>
+                )
+                )) : (<h1>No data found</h1>)}
+
+              </div>
+
+              <table className="table-container">
+                <thead>
+                  <tr>
+                    <th>id</th>
+                    <th>name</th>
+                    <th>username</th>
+                    <th>email</th>
+                    <th>street</th>
+                    <th>suite</th>
+                    <th>city</th>
+                    <th>zipcode</th>
+                    <th>lat</th>
+                    <th>lng</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.length > 0 ? (
+                    data.map((user, ind) => (
+                      <tr style={{ border: '1px solid black' }} key={ind}>
+                        <td>{user.id}</td>
+                        <td>{user.username}</td>
+                        <td>{user.email}</td>
+                        <td>{user.name}</td>
+                        <td>{user.address.street}</td>
+                        <td>{user.address.suite}</td>
+                        <td>{user.address.city}</td>
+                        <td>{user.address.zipcode}</td>
+                        <td>{user.address.geo.lat}</td>
+                        <td>{user.address.geo.lng}</td>
+                      </tr>
+                    ))
+                  ) : isLoading ? <h1>Loading...</h1> : isError}
+                </tbody>
+              </table>
+
+              {editInd !== null && (
+                <Modal show={show} onHide={handleClose}>
+                  <Modal.Header closeButton>
+                    <Modal.Title>Modal heading</Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                    <Form>
+                      <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                        <Form.Label>Username</Form.Label>
+                        <Form.Control
+                          type='text' name="username" value={editData.username} onChange={handleChange} onInput={validateUserName} placeholder='Enter Username' minLength={6} maxLength={20}
+                        />
+                        <span id='username-error' style={{ display: "none" }}>Enter valid username</span>
+                      </Form.Group>
+                      <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                        <Form.Label>Select Gender</Form.Label>
+
+                        <Form.Select name="gender" value={editData.gender || ""} onChange={handleChange}>
+                          <option value="">Select</option>
+                          {genderOptions.map((val, ind) => (
+                            <option key={ind} value={val}>
+                              {val}
+                            </option>
+                          ))}
+                        </Form.Select>
+                        <span id='gender-error' style={{ display: 'none' }}>Select your gender</span>
+                      </Form.Group>
+                      <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                        <Form.Label>Age</Form.Label>
+                        <Form.Control
+                          type='text' name="age" value={editData.age} onChange={handleChange} onInput={validateAge}
+                        />
+                        <span id='age-error' style={{ display: 'none' }}>Age must be greater than 16 and less than 90</span>
+                      </Form.Group>
+                      <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                        <Form.Label>Email</Form.Label>
+                        <Form.Control
+                          type='text' name="email" value={editData.email} onChange={handleChange} onInput={(e) => validateLocalEmail(e.target.value)}
+                        />
+                        <span id='email-error' style={{ display: "none" }}>Enter valid Email</span>
+                        <span id='duplicate-error' style={{ display: "none" }}>Email already exist</span>
+                      </Form.Group>
+                      <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                        <Form.Label>Stream</Form.Label>
+                        <Form.Label>
+                          <input
+                            type="radio"
+                            name="stream"
+                            value="PCM"
+                            checked={editData.stream === "PCM"}
+                            onChange={handleChange}
+                          />
+                          PCM
+                        </Form.Label>
+                        <Form.Label>
+                          <input
+                            type="radio"
+                            name="stream"
+                            value="Commerce"
+                            checked={editData.stream === "Commerce"}
+                            onChange={handleChange}
+                          />
+                          Commerce
+                        </Form.Label>
+                        <Form.Label>
+                          <input
+                            type="radio"
+                            name="stream"
+                            value="Arts"
+                            checked={editData.stream === "Arts"}
+                            onChange={handleChange}
+                          />
+                          Arts
+                        </Form.Label>
+                        <span id='stream-error' style={{ display: 'none', color: 'red' }}>Select a stream</span>
+                      </Form.Group>
+                      <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                        Subjects:
+                        {checkOption.map((it) => (
+                          <label key={it.key}>
+                            {it.label}
+                            <input
+                              type="checkbox"
+                              name={it.name}
+                              value={it.label}
+                              checked={(editData.subject).includes(it.label)}
+                              onChange={handleChange}
+                            />
+                          </label>
+                        ))}
+
+                        <span id='subject-error' style={{ display: 'none', color: 'red' }}>Select at least one subject</span>
+                      </Form.Group>
+                    </Form>
+                  </Modal.Body>
+                  <Modal.Footer>
+                    <Button variant="secondary" onClick={handleClose}>
+                      Close
+                    </Button>
+                    <Button variant="primary" onClick={handleSave}>
+                      Save Changes
+                    </Button>
+                  </Modal.Footer>
+                </Modal>)}
+
+              <Modal show={showDelete} onHide={handleCloseDelete}
+                size="lg"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered
+              >
+                <Modal.Header closeButton>
+                  <Modal.Title id="contained-modal-title-vcenter">
+                  </Modal.Title>
+                </Modal.Header>
+                <Modal.Footer>
+                  <Button variant="secondary" onClick={handleCloseDelete}>
+                    Close
+                  </Button>
+                  <Button variant="danger" onClick={() => handleDelete(deleteInd)}>
+                    Are you sure want to delete!
+                  </Button>
+                </Modal.Footer>
+              </Modal>
+
+
+            </div>
+          </div>
+          {/* <Pagination items={userData} pageLimit={pageLimit} setPageItems={setCurrPage} /> */}
+        </div>
+      </div>
+
+    </div>
+  )
+}
+
+export default Project

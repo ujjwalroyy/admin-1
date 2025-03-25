@@ -1,18 +1,18 @@
 import React from 'react'
-import logo2 from "./image/BT-logo2.png"
-import person from "./image/person.svg"
+import logo2 from "../image/BT-logo2.png"
+import person from "../image/person.svg"
 import { Link, useNavigate } from 'react-router-dom'
-import clock from "./image/clock.png"
-import angleDown from "./image/angle-down.png"
-import play from "./image/play.png"
-import notification from "./image/notification.svg"
-import globe from "./image/globe.png"
-import ellipsis from "./image/ellipsis-h.png"
-import eye from "./image/eye.svg"
-import deletePic from "./image/delete1.svg"
-import image1 from "./image/image1.png"
-import pdf from "./image/pdf.png"
-import image from "./image/image.png"
+import clock from "../image/clock.png"
+import angleDown from "../image/angle-down.png"
+import play from "../image/play.png"
+import notification from "../image/notification.svg"
+import globe from "../image/globe.png"
+import ellipsis from "../image/ellipsis-h.png"
+import eye from "../image/eye.svg"
+import deletePic from "../image/delete1.svg"
+import image1 from "../image/image1.png"
+import pdf from "../image/pdf.png"
+import image from "../image/image.png"
 
 const ProjectDetails = () => {
     const navigate = useNavigate()
