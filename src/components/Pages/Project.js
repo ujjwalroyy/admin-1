@@ -6,7 +6,7 @@ import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 // import Pagination from './Pagination'
 import { useDispatch, useSelector } from 'react-redux'
-import {  updateUser } from '../features/userSlice'
+import { updateUser } from '../features/userSlice'
 import { getUsers }
   from '../features/apiSlice'
 import Sideer from '../sider/Sideer'
@@ -27,7 +27,7 @@ const Project = () => {
 
   // const pageLimit = 2;
 
-  
+
 
 
   const handleShowDelete = (ind) => {
@@ -146,7 +146,7 @@ const Project = () => {
     }
   }
 
-  
+
   const handleSave = (e) => {
     e.preventDefault()
     if (validateUserName(editData.username) &&
@@ -201,7 +201,7 @@ const Project = () => {
   //   return isValid;
   // };
 
- 
+
 
   // const validatePassword = (password) =>
   //   validateField(password, /^[a-zA-Z0-9!@#$%^&*]{6,16}$/, 'password-error');
@@ -219,9 +219,9 @@ const Project = () => {
   //   if (genderInputRef.current) {
   //     genderInputRef.current.value = '';
   //   }
-  //   if (fileInputRef.current) {
-  //     fileInputRef.current.value = '';
-  //   }
+  // if (fileInputRef.current) {
+  //   fileInputRef.current.value = '';
+  // }
   // };
 
 
@@ -233,18 +233,18 @@ const Project = () => {
         <div className="intersight_content">
 
           <div className="body_content">
-           <Header/>
+            <Header />
             <div className="contact-profile">
 
               <div className="row">
                 {userData.length > 0 ? (userData.map((user, ind) => (
-                  <div key={ind} id='for-search' className="col-lg-6" >
+                  <div key={ind} id='for-search' className="col-lg-6 mb-3" >
                     <div className="professional_info">
                       <div className="project-card-top">
                         <div className="project-card-heading d-flex align-items-center justify-content-between">
                           <div className="body_heading2 mb-0 ">
                             <div className='d-flex'>
-                              <h2 className="font-18 mb-0">{user.username}</h2>
+                              <h2 className="font-18 mb-0"><span className="me-2"><img src={user.file} style={{ maxWidth: "30px", }} alt="" /></span>{user.username}</h2>
                               <span className=''>
                                 <button className="dropdown-toggle border-0 w-0 d-flex align-items-center" type="button"
                                   data-bs-toggle="dropdown" aria-expanded="false">
@@ -261,16 +261,16 @@ const Project = () => {
                           <p className="mb-0 font-14 body-sub-heading ">Gender: <span> {user.gender}</span> </p>
 
                         </div>
-                        <div className="technology-heading d-flex align-items-center justify-content-between">
-                          <p className="my-2 font-14 body-sub-heading "><span className="me-2"><img src={user.file} style={{ maxWidth: "30px", }} alt="" /></span>Stream: <span> {user.stream}</span></p>
+                        <div className="project-card-heading technology-heading d-flex align-items-center justify-content-between">
+                          <p className="my-2 font-14 body-sub-heading ">Stream: <span> {user.stream}</span></p>
                           <p className="my-2 font-14 body-sub-heading ">Age: <span>{user.age}</span>  </p>
                         </div>
-                        <div className="project-progress mt-2">
+                        {/* <div className="project-progress mt-2">
                           <div className="progress" role="progressbar" aria-label="Basic example" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
                             <div className="progress-bar" style={{ width: '25%' }}></div>
                           </div>
-                        </div>
-                        <div className=" d-flex align-items-center justify-content-between">
+                        </div> */}
+                        <div className="project-card-heading d-flex align-items-center justify-content-between">
                           <p className="my-2 font-14 body-sub-heading ">Subjects: <span> {user.subject.join(", ")}</span></p>
                           <p className="my-2 font-14 body-sub-heading ">Status <span><select
                             value={user.status || "Active"}
@@ -293,7 +293,51 @@ const Project = () => {
 
               </div>
 
-              <table className="table-container">
+              <div className="row">
+                {data.length > 0 ? (data.map((user, ind) => (
+                  <div key={ind} id='for-search' className="col-lg-6 mb-3" >
+                    <div className="professional_info">
+                      <div className="project-card-top">
+                        <div className="project-card-heading d-flex align-items-center justify-content-between">
+                          <div className="body_heading2 mb-0 ">
+                            <div className='d-flex'>
+
+                              <h2 className="font-18 mb-0"><span className="me-2"><img src='https://avatar.iran.liara.run/public' style={{ maxWidth: "30px", }} alt="" /></span>{user.username}</h2>
+                            </div>
+                            <p className="mb-0 body-sub-heading font-12">Created by:- <span>{user.email}</span></p>
+                          </div>
+                          {/* <p className="mb-0 font-14 body-sub-heading ">lng. <span> {user.address.geo.lng}</span> </p> */}
+                          <p className="mb-0 font-14 body-sub-heading ">Name: <span> {user.name}</span> </p>
+
+                        </div>
+                        <div className="project-card-heading technology-heading d-flex align-items-center justify-content-between">
+                          <p className="my-2 font-14 body-sub-heading ">Suite: <span className="me-2">{user.address.suite}
+                          </span></p>
+                          <p className="my-2 font-14 body-sub-heading ">City: <span> {user.address.city}</span></p>
+                          <p className="my-2 font-14 body-sub-heading ">Street: <span>{user.address.street}</span>  </p>
+                        </div>
+
+                        {/* <div className="project-progress mt-2">
+                          <div className="progress" role="progressbar" aria-label="Basic example" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
+                            <div className="progress-bar" style={{ width: '25%' }}></div>
+                          </div>
+                        </div> */}
+                        <div className="project-card-heading d-flex align-items-center justify-content-between">
+                          <p className="my-2 font-14 body-sub-heading ">ZipCode: <span className="me-2"> {user.address.zipcode}</span></p>
+                          <p className="my-2 font-14 body-sub-heading ">Lat. <span>{user.address.geo.lat}</span> </p>
+                          <p className="my-2 font-14 body-sub-heading ">Lng. <span>{user.address.geo.lng}</span> </p>
+                        </div>
+                      </div>
+
+
+                    </div>
+                  </div>
+                )
+                )) : isLoading ? <h5 style={{ textAlign: 'center' }}>Loading...</h5> : <h5 style={{ textAlign: 'center' }}>{'some thing wents wrong' || isError}</h5>}
+
+              </div>
+
+              {/* <table className="table-container">
                 <thead>
                   <tr>
                     <th>id</th>
@@ -324,9 +368,9 @@ const Project = () => {
                         <td>{user.address.geo.lng}</td>
                       </tr>
                     ))
-                  ) : isLoading ? <h1>Loading...</h1> : isError}
+                  ) : isLoading ? <h1>Loading...</h1> : <h4>{isError}</h4>}
                 </tbody>
-              </table>
+              </table> */}
 
               {editInd !== null && (
                 <Modal show={show} onHide={handleClose}>
@@ -334,15 +378,15 @@ const Project = () => {
                     <Modal.Title>Modal heading</Modal.Title>
                   </Modal.Header>
                   <Modal.Body>
-                    <Form>
-                      <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                    <Form className='row'>
+                      <Form.Group className="mb-3 col" controlId="exampleForm.ControlInput1">
                         <Form.Label>Username</Form.Label>
                         <Form.Control
                           type='text' name="username" value={editData.username} onChange={handleChange} onInput={validateUserName} placeholder='Enter Username' minLength={6} maxLength={20}
                         />
                         <span id='username-error' style={{ display: "none" }}>Enter valid username</span>
                       </Form.Group>
-                      <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                      <Form.Group className="mb-3 col" controlId="exampleForm.ControlInput1">
                         <Form.Label>Select Gender</Form.Label>
 
                         <Form.Select name="gender" value={editData.gender || ""} onChange={handleChange}>
@@ -355,13 +399,14 @@ const Project = () => {
                         </Form.Select>
                         <span id='gender-error' style={{ display: 'none' }}>Select your gender</span>
                       </Form.Group>
-                      <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                      <Form.Group className="mb-3 col" controlId="exampleForm.ControlInput1">
                         <Form.Label>Age</Form.Label>
                         <Form.Control
                           type='text' name="age" value={editData.age} onChange={handleChange} onInput={validateAge}
                         />
                         <span id='age-error' style={{ display: 'none' }}>Age must be greater than 16 and less than 90</span>
                       </Form.Group>
+
                       <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
                         <Form.Label>Email</Form.Label>
                         <Form.Control
@@ -370,57 +415,59 @@ const Project = () => {
                         <span id='email-error' style={{ display: "none" }}>Enter valid Email</span>
                         <span id='duplicate-error' style={{ display: "none" }}>Email already exist</span>
                       </Form.Group>
-                      <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                        <Form.Label>Stream</Form.Label>
-                        <Form.Label>
-                          <input
-                            type="radio"
-                            name="stream"
-                            value="PCM"
-                            checked={editData.stream === "PCM"}
-                            onChange={handleChange}
-                          />
-                          PCM
-                        </Form.Label>
-                        <Form.Label>
-                          <input
-                            type="radio"
-                            name="stream"
-                            value="Commerce"
-                            checked={editData.stream === "Commerce"}
-                            onChange={handleChange}
-                          />
-                          Commerce
-                        </Form.Label>
-                        <Form.Label>
-                          <input
-                            type="radio"
-                            name="stream"
-                            value="Arts"
-                            checked={editData.stream === "Arts"}
-                            onChange={handleChange}
-                          />
-                          Arts
-                        </Form.Label>
-                        <span id='stream-error' style={{ display: 'none', color: 'red' }}>Select a stream</span>
-                      </Form.Group>
-                      <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                        Subjects:
-                        {checkOption.map((it) => (
-                          <label key={it.key}>
-                            {it.label}
+                      <div className='row'>
+                        <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                          <Form.Label>Stream</Form.Label>
+                          <Form.Label>
                             <input
-                              type="checkbox"
-                              name={it.name}
-                              value={it.label}
-                              checked={(editData.subject).includes(it.label)}
+                              type="radio"
+                              name="stream"
+                              value="PCM"
+                              checked={editData.stream === "PCM"}
                               onChange={handleChange}
                             />
-                          </label>
-                        ))}
+                            PCM
+                          </Form.Label>
+                          <Form.Label>
+                            <input
+                              type="radio"
+                              name="stream"
+                              value="Commerce"
+                              checked={editData.stream === "Commerce"}
+                              onChange={handleChange}
+                            />
+                            Commerce
+                          </Form.Label>
+                          <Form.Label>
+                            <input
+                              type="radio"
+                              name="stream"
+                              value="Arts"
+                              checked={editData.stream === "Arts"}
+                              onChange={handleChange}
+                            />
+                            Arts
+                          </Form.Label>
+                          <span id='stream-error' style={{ display: 'none', color: 'red' }}>Select a stream</span>
+                        </Form.Group>
+                        <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                          <Form.Label className='label-me'>Subjects: </Form.Label>
+                          {checkOption.map((it) => (
+                            <label key={it.key}>
+                              {it.label}
+                              <input
+                                type="checkbox"
+                                name={it.name}
+                                value={it.label}
+                                checked={(editData.subject).includes(it.label)}
+                                onChange={handleChange}
+                              />
+                            </label>
+                          ))}
 
-                        <span id='subject-error' style={{ display: 'none', color: 'red' }}>Select at least one subject</span>
-                      </Form.Group>
+                          <span id='subject-error' style={{ display: 'none', color: 'red' }}>Select at least one subject</span>
+                        </Form.Group>
+                      </div>
                     </Form>
                   </Modal.Body>
                   <Modal.Footer>
@@ -433,25 +480,24 @@ const Project = () => {
                   </Modal.Footer>
                 </Modal>)}
 
-              <Modal show={showDelete} onHide={handleCloseDelete}
-                size="lg"
-                aria-labelledby="contained-modal-title-vcenter"
+
+              <Modal show={showDelete} onHide={handleCloseDelete} className='modalSize'
+                size='md'
                 centered
               >
                 <Modal.Header closeButton>
-                  <Modal.Title id="contained-modal-title-vcenter">
+                  <Modal.Title id="contained-modal-title-vcenter">Are you sure want to delete!
                   </Modal.Title>
                 </Modal.Header>
                 <Modal.Footer>
                   <Button variant="secondary" onClick={handleCloseDelete}>
-                    Close
+                    No
                   </Button>
                   <Button variant="danger" onClick={() => handleDelete(deleteInd)}>
-                    Are you sure want to delete!
+                    Yes
                   </Button>
                 </Modal.Footer>
               </Modal>
-
 
             </div>
           </div>

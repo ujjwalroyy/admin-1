@@ -7,6 +7,7 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { useDispatch, useSelector } from 'react-redux';
 import { saveUser } from '../features/userSlice';
+import '../css/custom.css'
 
 const Header = () => {
   const dispatch = useDispatch()
@@ -88,7 +89,7 @@ const Header = () => {
       newArr.push(val.target.name)
     }
     else {
-      newArr.splice(newArr.indexOf(val.target.key), 1)
+      newArr.pop(newArr.indexOf(val.target.key))
     }
     setSubject(newArr)
   };
@@ -103,9 +104,18 @@ const Header = () => {
     document.getElementById('cPassword-error').style.display = 'none';
   };
 
+  const handleImageClose = (val) => {
+    if (fileInputRef.current) {
+      document.getElementById('my-icon').style.display = 'none'
+      fileInputRef.current.value = null;
+      setFile(null)
+    }
+  }
+
   const handleProfilePic = (val) => {
     const file = val.target.files[0]
     if (file) {
+      document.getElementById('my-icon').style.display = 'block'
       const read = new FileReader()
       read.onloadend = () => {
         setFile(read.result)
@@ -180,10 +190,10 @@ const Header = () => {
         subject: [...subject],
         password
       };
-      dispatch(saveUser(userData))
-      // const user = JSON.parse(localStorage.getItem('data')) || [];
-      // user.push(userData);
-      // localStorage.setItem('data', JSON.stringify(user));
+      // dispatch(saveUser(userData))
+      const user = JSON.parse(localStorage.getItem('data')) || [];
+      user.push(userData);
+      localStorage.setItem('data', JSON.stringify(user));
       // handleClear();
       handleFormClose()
     }
@@ -195,7 +205,7 @@ const Header = () => {
         <h1 >Projects</h1>
         <span style={{ marginRight: '450px' }} className='fs-5'>{username}</span>
 
-        <div>
+        <div >
           <input type="text" id="myInput" onKeyUp={mySearch} placeholder="search" />
         </div>
         <div className="header_notification d-flex align-items-center gap-2">
@@ -231,15 +241,15 @@ const Header = () => {
           <Modal.Title>Modal heading</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form>
-            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+          <Form className='row'>
+            <Form.Group className="mb-3 col" controlId="exampleForm.ControlInput1">
               <Form.Label>Username</Form.Label>
               <Form.Control
                 type='text' value={userName} onChange={(e) => setUserName(e.target.value)} placeholder='Enter Username' minLength={6} maxLength={20}
               />
-              <span id='username-error' style={{ display: "none" }}>Enter valid username</span>
+              <span id='username-error' style={{ display: "none", color: 'red' }}>Enter valid username</span>
             </Form.Group>
-            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+            <Form.Group className="mb-3 col" controlId="exampleForm.ControlInput1">
               <Form.Label>Select Gender</Form.Label>
 
               <Form.Select ref={genderInputRef} onChange={(e) => handleGenderChange(e.target.value)}>
@@ -248,61 +258,75 @@ const Header = () => {
                 <option>Female</option>
                 <option>Other</option>
               </Form.Select>
-              <span id='gender-error' style={{ display: 'none' }}>Select your gender</span>
+              <span id='gender-error' style={{ display: 'none', color: 'red' }}>Select your gender</span>
             </Form.Group>
-            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+            <Form.Group className="mb-3 col" controlId="exampleForm.ControlInput1">
               <Form.Label>Age</Form.Label>
               <Form.Control
                 type='text' value={age} onChange={(e) => setAge(e.target.value)}
               />
-              <span id='age-error' style={{ display: 'none' }}>Age must be greater than 16 and less than 90</span>
+              <span id='age-error' style={{ display: 'none', color: 'red' }}>Age must be greater than 16 and less than 90</span>
             </Form.Group>
-            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-              <Form.Label>Email</Form.Label>
-              <Form.Control
-                type='text' value={email} onChange={(e) => setEmail(e.target.value)} onInput={(e) => validateLocalEmail(e.target.value)}
-              />
-              <span id='email-error' style={{ display: "none" }}>Enter valid Email</span>
-              <span id='duplicate-error' style={{ display: "none" }}>Email already exist</span>
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-              <Form.Label>Stream</Form.Label>
-              <input type='radio' checked={selectedValue === 'PCM'} onChange={() => handleRadioChange('PCM')} />PCM
-              <input type='radio' checked={selectedValue === 'Commerce'} onChange={() => handleRadioChange('Commerce')} />Commerce
-              <input type='radio' checked={selectedValue === 'Arts'} onChange={() => handleRadioChange('Arts')} />Arts
-              <span id='stream-error' style={{ display: 'none', color: 'red' }}>Select a stream</span>
-              <span id='stream-error' style={{ display: 'none', color: 'red' }}>Select a stream</span>
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-              Subjects:
-              {checkOption.map((it) => (
-                <label key={it.key}>
-                  {it.label}
-                  <input type='checkbox' name={it.name} checked={subject.includes(it.name)} onChange={handleSubjectChange} />
-                </label>
-              ))}
 
-              <span id='subject-error' style={{ display: 'none', color: 'red' }}>Select at least one subject</span>
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-              <Form.Label>Password</Form.Label>
-              <Form.Control
-                type='text' value={password} onChange={handlePasswordChange} onInput={validatePassword}
-              />
-              <span id='password-error' style={{ display: "none", color: 'red' }}>Enter valid password</span>
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-              <Form.Label>Confirm Password</Form.Label>
-              <Form.Control
-                type='text' value={confirmPassword} onChange={handleConfirmPasswordChange} onInput={comparePassword}
-              />
-              <span id='cPassword-error' style={{ display: "none", color: 'red' }}>password and confirm password not matched</span>
-            </Form.Group>
+
+            <div className='row'>
+              <Form.Group className="mb-3 col" controlId="exampleForm.ControlInput1">
+                <Form.Label>Email</Form.Label>
+                <Form.Control
+                  type='text' value={email} onChange={(e) => setEmail(e.target.value)} onInput={(e) => validateLocalEmail(e.target.value)}
+                />
+                <span id='email-error' style={{ display: "none", color: 'red' }}>Enter valid Email</span>
+                <span id='duplicate-error' style={{ display: "none", color: 'red' }}>Email already exist</span>
+              </Form.Group>
+              <Form.Group className="mb-3 col" controlId="exampleForm.ControlInput1">
+                <Form.Label>Password</Form.Label>
+                <Form.Control
+                  type='text' value={password} onChange={handlePasswordChange} onInput={validatePassword}
+                />
+                <span id='password-error' style={{ display: "none", color: 'red' }}>Enter valid password</span>
+              </Form.Group>
+              <Form.Group className="mb-3 col" controlId="exampleForm.ControlInput1">
+                <Form.Label>Confirm Password</Form.Label>
+                <Form.Control
+                  type='text' value={confirmPassword} onChange={handleConfirmPasswordChange} onInput={comparePassword}
+                />
+                <span id='cPassword-error' style={{ display: "none", color: 'red' }}>password and confirm password not matched</span>
+              </Form.Group>
+            </div>
+            <div className='row'>
+              <Form.Group className="mb-3 col" controlId="exampleForm.ControlInput1">
+
+                <Form.Label>Stream: </Form.Label>
+                <input type='radio' checked={selectedValue === 'PCM'} onChange={() => handleRadioChange('PCM')} />PCM
+                <input type='radio' checked={selectedValue === 'Commerce'} onChange={() => handleRadioChange('Commerce')} />Commerce
+                <input type='radio' checked={selectedValue === 'Arts'} onChange={() => handleRadioChange('Arts')} />Arts
+                <span id='stream-error' style={{ display: 'none', color: 'red' }}>Select a stream</span>
+                <span id='stream-error' style={{ display: 'none', color: 'red' }}>Select a stream</span>
+              </Form.Group>
+
+
+              <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                <Form.Label className='label-me'>Subjects: </Form.Label>
+                {checkOption.map((it) => (
+                  <label key={it.key}>
+                    {it.label}
+                    <input type='checkbox' name={it.name} checked={subject.includes(it.name)} onChange={handleSubjectChange} />
+                  </label>
+                ))}
+
+                <span id='subject-error' style={{ display: 'none', color: 'red' }}>Select at least one subject</span>
+              </Form.Group>
+            </div>
+
             <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
               <Form.Label>Profile photo</Form.Label>
               <Form.Control
                 type='file' ref={fileInputRef} onChange={handleProfilePic}
               />
+              <div style={{ position: 'relative' }}>
+                <span onClick={handleImageClose} id='my-icon' className="close AClass" style={{ position: 'absolute', cursor: 'pointer', fontSize: '25px', display: 'none' }} >&times;</span>
+                <img alt='' src={file} style={{ maxWidth: "154px" }} />
+              </div>
             </Form.Group>
           </Form>
         </Modal.Body>
@@ -320,3 +344,4 @@ const Header = () => {
 }
 
 export default Header
+

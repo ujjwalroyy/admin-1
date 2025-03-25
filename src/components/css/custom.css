@@ -114,6 +114,12 @@ input:focus,
 .menu_div {
   margin-top: 25px;
 }
+.modalSize{
+  width: 30%;
+  margin-left: 500px;
+  justify-content: center;
+  align-items: center;
+}
 .menu_div li.without_label {
   font-size: 12px;
   font-weight: 600;
@@ -171,6 +177,10 @@ input:focus,
 .user_person {
   padding: 0px 12px 0px;
 }
+.AClass{
+  left:138px;
+  position: absolute;
+}
 .bottom_menu .dropdown button {
   background: transparent;
   color: #000000;
@@ -192,6 +202,18 @@ input:focus,
   height: 40px;
   border-radius: 50%;
 }
+
+input[type="radio"]{
+  margin: 0 5px 0 5px;
+}
+
+input[type="checkbox"]{
+  margin: 0 5px 0 5px;
+}
+.label-me{
+  margin: 0px 10px 0px 2px;
+}
+
 .person_name span {
   font-size: 13px;
     color: #454545;

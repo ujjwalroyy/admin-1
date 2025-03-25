@@ -7,3 +7,4 @@ export const fetchUserData = async () => {
     return response
     
 }
+
