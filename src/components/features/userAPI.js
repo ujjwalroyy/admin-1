@@ -14,3 +14,4 @@ export const fetchProductsData = async () => {
     const response = await axios(PRODUCTS_API)
     return response;
 }
+

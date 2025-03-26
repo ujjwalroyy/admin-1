@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 
 import logo2 from "../image/BT-logo2.png"
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 const Sideer = () => {
     const [loggedInUser, setLoggedInUser] = useState('');
 

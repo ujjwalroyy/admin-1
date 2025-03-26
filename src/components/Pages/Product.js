@@ -24,17 +24,27 @@ const Product = () => {
                         <Header />
                         <div className="contact-profile">
                             <div className='row pCard'>
-                                {data && data.map(product => {
+                                {data.length > 0 ? (data.map(product => {
                                     return (
                                         <div key={product.id} className="card col-md-4">
-                                            <img src={product.image} alt="Denim Jeans" style={{ width: "170px", height: "200px", marginLeft: '60px', marginTop: '10px' }} />
+                                            <div className='project-card-heading mb-2'>
+                                            <img src={product.image} alt="Denim Jeans" style={{ width: "170px", height: "200px", marginLeft: '15px', marginTop: '10px' }} />
+                                            </div>
+                                            
                                             <h6>{isShowMore ? product.title : product.title.slice(0, 20)}</h6>
-                                            <p className="price">{product.price}</p>
-                                            <p>{isShowMore ? product.description : product.description.slice(0, 50)}<span onClick={() => setShowMore(!isShowMore)} style={{ backgroundColor: '#2ecc71', cursor: 'pointer' }}>{isShowMore ? "Show less" : "...Show more"}</span></p>
-                                            <button className='cart-btn'>Add to Cart</button>
+                                           
+                                           
+                                            <p className="price">${product.price}</p>
+                                            
+                                            {/* <p>{isShowMore ? product.description : product.description.slice(0, 50)}<span onClick={() => setShowMore(!isShowMore)} style={{ backgroundColor: '#2ecc71', cursor: 'pointer' }}>{isShowMore ? "Show less" : "...Show more"}</span></p> */}
+                                            <div className='project-card-heading'>
+                                            <p>{product.description.slice(0, 40)}</p>
+                                            </div>
+                                            <button className='cart-btn'>Buy</button>
+                                            
                                         </div>
                                     )
-                                })}
+                                })): isLoading ? <h5 style={{ textAlign: 'center' }}>Loading...</h5> : <h5 style={{ textAlign: 'center' }}>{'some thing wents wrong' || isError}</h5>}
                             </div>
                         </div>
                     </div>
