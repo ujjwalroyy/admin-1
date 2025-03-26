@@ -65,7 +65,7 @@ const Project = () => {
         setUserData(JSON.parse(storedData));
       }
     }
-  }, [loggedInUser, userData, editData]);
+  }, []);
 
   const handleDelete = (ind) => {
     const updatedData = userData.filter((_, i) => i !== ind)
@@ -384,7 +384,7 @@ const Project = () => {
                         <Form.Control
                           type='text' name="username" value={editData.username} onChange={handleChange} onInput={validateUserName} placeholder='Enter Username' minLength={6} maxLength={20}
                         />
-                        <span id='username-error' style={{ display: "none" }}>Enter valid username</span>
+                        <span id='username-error' style={{ display: "none", color: 'red' }}>Enter valid username</span>
                       </Form.Group>
                       <Form.Group className="mb-3 col" controlId="exampleForm.ControlInput1">
                         <Form.Label>Select Gender</Form.Label>
@@ -397,14 +397,14 @@ const Project = () => {
                             </option>
                           ))}
                         </Form.Select>
-                        <span id='gender-error' style={{ display: 'none' }}>Select your gender</span>
+                        <span id='gender-error' style={{ display: 'none', color: 'red' }}>Select your gender</span>
                       </Form.Group>
                       <Form.Group className="mb-3 col" controlId="exampleForm.ControlInput1">
                         <Form.Label>Age</Form.Label>
                         <Form.Control
                           type='text' name="age" value={editData.age} onChange={handleChange} onInput={validateAge}
                         />
-                        <span id='age-error' style={{ display: 'none' }}>Age must be greater than 16 and less than 90</span>
+                        <span id='age-error' style={{ display: 'none', color: 'red' }}>Age must be greater than 16 and less than 90</span>
                       </Form.Group>
 
                       <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
@@ -412,8 +412,8 @@ const Project = () => {
                         <Form.Control
                           type='text' name="email" value={editData.email} onChange={handleChange} onInput={(e) => validateLocalEmail(e.target.value)}
                         />
-                        <span id='email-error' style={{ display: "none" }}>Enter valid Email</span>
-                        <span id='duplicate-error' style={{ display: "none" }}>Email already exist</span>
+                        <span id='email-error' style={{ display: "none", color: 'red' }}>Enter valid Email</span>
+                        <span id='duplicate-error' style={{ display: "none", color: 'red' }}>Email already exist</span>
                       </Form.Group>
                       <div className='row'>
                         <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">

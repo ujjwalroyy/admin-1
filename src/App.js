@@ -6,6 +6,9 @@ import PrivateRoute from './components/PrivateRoutes/PrivateRoute';
 import HandleLoginRoute from './components/PrivateRoutes/HandleLoginRoute';
 import AddTasks from './components/Tasks/AddTasks';
 import HomePage from './components/Pages/HomePage';
+import Product from './components/Pages/Product';
+import Sideer from './components/sider/Sideer';
+
 
 function App() {
   // const isLoggedIn = localStorage.getItem('isLoggedIn')
@@ -23,6 +26,7 @@ function App() {
           <Route path='/project-details' element={<PrivateRoute Component={ProjectDetails} />} />
           {/* <Route path='/project-detail' element={isLoggedIn === true ? <ProjectDetails/> : <LoginPage/>} /> */}
           <Route path='/add-tasks' element={<PrivateRoute Component={AddTasks} />} />
+          <Route path='/products' element={<PrivateRoute Component={Product} />} />
         </Routes>
       </BrowserRouter>
   );

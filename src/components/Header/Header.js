@@ -5,12 +5,11 @@ import { Link, useNavigate } from 'react-router-dom'
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import { useDispatch, useSelector } from 'react-redux';
-import { saveUser } from '../features/userSlice';
+import { useSelector } from 'react-redux';
 import '../css/custom.css'
 
 const Header = () => {
-  const dispatch = useDispatch()
+  // const dispatch = useDispatch()
   const navigate = useNavigate()
   const [showForm, setShowForm] = useState(false);
   const [selectedValue, setSelectedValue] = useState('');
@@ -202,10 +201,12 @@ const Header = () => {
   return (
     <>
       <div className="top_header d-flex align-items-center justify-content-between">
-        <h1 >Projects</h1>
-        <span style={{ marginRight: '450px' }} className='fs-5'>{username}</span>
 
+        <h1 >Projects</h1>
         <div >
+          <span  className='fs-5'>{username}</span>
+
+
           <input type="text" id="myInput" onKeyUp={mySearch} placeholder="search" />
         </div>
         <div className="header_notification d-flex align-items-center gap-2">

@@ -8,3 +8,9 @@ export const fetchUserData = async () => {
     
 }
 
+const PRODUCTS_API = "https://fakestoreapi.com/products";
+
+export const fetchProductsData = async () => {
+    const response = await axios(PRODUCTS_API)
+    return response;
+}

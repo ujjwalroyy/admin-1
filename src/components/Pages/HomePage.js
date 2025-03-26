@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { saveUser } from '../features/userSlice';
+import Sideer from '../sider/Sideer';
 
 const HomePage = () => {
     // const [num, setNum] = useState('')
@@ -72,6 +73,7 @@ const HomePage = () => {
     // </div>
 
     <>
+    <Sideer/>
     <label>Username: {un}</label><br/>
     <input type='text' onChange={(e) => setUsername(e.target.value)} placeholder='username' /><br/>
     <label>Email: {em}</label><br/>
