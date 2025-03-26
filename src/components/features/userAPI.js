@@ -15,3 +15,16 @@ export const fetchProductsData = async () => {
     return response;
 }
 
+const COMMENT_API = "https://dummyjson.com/comments";
+
+export const fetchCommentData = async () => {
+    const response = await axios(COMMENT_API)
+    return response;
+}
+
+const COMPANY_API = 'https://fake-json-api.mock.beeceptor.com/companieshttps://fake-json-api.mock.beeceptor.com/companies'
+
+export const fetchCompanyData = async () => {
+    const response = await axios(COMPANY_API)
+    return response;
+}

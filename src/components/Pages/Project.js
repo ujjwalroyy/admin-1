@@ -65,7 +65,7 @@ const Project = () => {
         setUserData(JSON.parse(storedData));
       }
     }
-  }, []);
+  }, [loggedInUser, userData, editData]);
 
   const handleDelete = (ind) => {
     const updatedData = userData.filter((_, i) => i !== ind)
@@ -336,41 +336,6 @@ const Project = () => {
                 )) : isLoading ? <h5 style={{ textAlign: 'center' }}>Loading...</h5> : <h5 style={{ textAlign: 'center' }}>{'some thing wents wrong' || isError}</h5>}
 
               </div>
-
-              {/* <table className="table-container">
-                <thead>
-                  <tr>
-                    <th>id</th>
-                    <th>name</th>
-                    <th>username</th>
-                    <th>email</th>
-                    <th>street</th>
-                    <th>suite</th>
-                    <th>city</th>
-                    <th>zipcode</th>
-                    <th>lat</th>
-                    <th>lng</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.length > 0 ? (
-                    data.map((user, ind) => (
-                      <tr style={{ border: '1px solid black' }} key={ind}>
-                        <td>{user.id}</td>
-                        <td>{user.username}</td>
-                        <td>{user.email}</td>
-                        <td>{user.name}</td>
-                        <td>{user.address.street}</td>
-                        <td>{user.address.suite}</td>
-                        <td>{user.address.city}</td>
-                        <td>{user.address.zipcode}</td>
-                        <td>{user.address.geo.lat}</td>
-                        <td>{user.address.geo.lng}</td>
-                      </tr>
-                    ))
-                  ) : isLoading ? <h1>Loading...</h1> : <h4>{isError}</h4>}
-                </tbody>
-              </table> */}
 
               {editInd !== null && (
                 <Modal show={show} onHide={handleClose}>

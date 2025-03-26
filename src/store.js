@@ -5,6 +5,8 @@ import userSlice from "./components/features/userSlice";
 import authSlice from "./components/features/authSlice";
 import apiSlice from "./components/features/apiSlice";
 import productSlice from "./components/features/productSlice";
+import commentSlice from "./components/features/commentSlice";
+import companySlice from "./components/features/companySlice";
 
 const store = configureStore({
     reducer:{
@@ -12,7 +14,9 @@ const store = configureStore({
         users: userSlice,
         auth: authSlice,
         api: apiSlice,
-        products: productSlice
+        products: productSlice,
+        comments: commentSlice,
+        company: companySlice,
     }
 })
 

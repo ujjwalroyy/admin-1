@@ -1,44 +1,43 @@
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { saveUser } from '../features/userSlice';
-import Sideer from '../sider/Sideer';
 
 const HomePage = () => {
-    // const [num, setNum] = useState('')
-    // const count = useSelector((state) => state.counter.value)
-    const dispatch = useDispatch();
+  // const [num, setNum] = useState('')
+  // const count = useSelector((state) => state.counter.value)
+  const dispatch = useDispatch();
 
-    // const handleIncrement = () => {
-    //     dispatch(increment())
-    // }
-    // const handleDecrement = () => {
-    //     dispatch(decrement())
-    // }
-    // const handleReset = () => {
-    //     dispatch(reset())
-    // }
-    // const handleIncByNum = () => {
-    //     dispatch(incrementByNum(num))
-    // }
+  // const handleIncrement = () => {
+  //     dispatch(increment())
+  // }
+  // const handleDecrement = () => {
+  //     dispatch(decrement())
+  // }
+  // const handleReset = () => {
+  //     dispatch(reset())
+  // }
+  // const handleIncByNum = () => {
+  //     dispatch(incrementByNum(num))
+  // }
 
-    const [username, setUsername] = useState('');
-    const [age, setAge] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const un = useSelector((state) => state.users.username)
-    const em = useSelector((state) => state.users.email)
-    const ag = useSelector((state) => state.users.age)
-    const ps = useSelector((state) => state.users.password)
-    // const state = useSelector((state) => state);
-    const handleSave = () => {
-      const users = {
-        username,
-        age,
-        email,
-        password
-      }
-      dispatch(saveUser(users))
+  const [username, setUsername] = useState('');
+  const [age, setAge] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const un = useSelector((state) => state.users.username)
+  const em = useSelector((state) => state.users.email)
+  const ag = useSelector((state) => state.users.age)
+  const ps = useSelector((state) => state.users.password)
+  // const state = useSelector((state) => state);
+  const handleSave = () => {
+    const users = {
+      username,
+      age,
+      email,
+      password
     }
+    dispatch(saveUser(users))
+  }
   return (
     // <div>
     //   <div>
@@ -67,26 +66,25 @@ const HomePage = () => {
     //     >
     //       Add
     //     </button>
-        
+
     //   </div>
-      
+
     // </div>
 
     <>
-    <Sideer/>
-    <label>Username: {un}</label><br/>
-    <input type='text' onChange={(e) => setUsername(e.target.value)} placeholder='username' /><br/>
-    <label>Email: {em}</label><br/>
-    <input type='text' onChange={(e) => setEmail(e.target.value)} placeholder='username'/><br/>
-    <label>Password: {ps}</label><br/>
-    <input type='text' onChange={(e) => setPassword(e.target.value)} placeholder='username'/><br/>
-    <label>Age: {ag}</label><br/>
-    <input type='text' onChange={(e) => setAge(e.target.value)} placeholder='username'/><br/>
-    <button onClick={handleSave}>Save</button>
+      <label>Username: {un}</label><br />
+      <input type='text' onChange={(e) => setUsername(e.target.value)} placeholder='username' /><br />
+      <label>Email: {em}</label><br />
+      <input type='text' onChange={(e) => setEmail(e.target.value)} placeholder='username' /><br />
+      <label>Password: {ps}</label><br />
+      <input type='text' onChange={(e) => setPassword(e.target.value)} placeholder='username' /><br />
+      <label>Age: {ag}</label><br />
+      <input type='text' onChange={(e) => setAge(e.target.value)} placeholder='username' /><br />
+      <button onClick={handleSave}>Save</button>
 
 
 
-    {/* <div>
+      {/* <div>
     <button onClick={(e) => dispatch(fetchUsers())}>Click</button>
     <br/>
     {state?.api?.isLoading && <b>Loading....</b>}

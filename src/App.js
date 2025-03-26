@@ -8,6 +8,7 @@ import AddTasks from './components/Tasks/AddTasks';
 import HomePage from './components/Pages/HomePage';
 import Product from './components/Pages/Product';
 import Sideer from './components/sider/Sideer';
+import Task from './components/Pages/Task';
 
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
           {/* <Route path='/project-detail' element={isLoggedIn === true ? <ProjectDetails/> : <LoginPage/>} /> */}
           <Route path='/add-tasks' element={<PrivateRoute Component={AddTasks} />} />
           <Route path='/products' element={<PrivateRoute Component={Product} />} />
+          <Route path='/tasks' element={<PrivateRoute Component={Task} />} />
         </Routes>
       </BrowserRouter>
   );
