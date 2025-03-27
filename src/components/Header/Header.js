@@ -168,6 +168,24 @@ const Header = () => {
     navigate("/login");
   };
 
+  const handleClear = () => {
+    setUserName('');
+    setAge('');
+    setEmail('');
+    setPassword('');
+    setConfirmPassword('');
+    setSubject([]);
+    setFile(null);
+    setSelectedValue('');
+    setGender('');
+    if (genderInputRef.current) {
+      genderInputRef.current.value = '';
+    }
+  if (fileInputRef.current) {
+    fileInputRef.current.value = '';
+  }
+  };
+
   const storeData = (e) => {
     e.preventDefault();
     if (
@@ -193,7 +211,7 @@ const Header = () => {
       const user = JSON.parse(localStorage.getItem('data')) || [];
       user.push(userData);
       localStorage.setItem('data', JSON.stringify(user));
-      // handleClear();
+      handleClear();
       handleFormClose()
     }
   };

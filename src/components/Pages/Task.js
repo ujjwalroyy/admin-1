@@ -7,6 +7,7 @@ import img5 from './../image/notification.svg'
 import img6 from './../image/ellipsis-h.png'
 import img7 from './../image/eye.svg'
 import img8 from './../image/delete1.svg'
+import img9 from './../image/image1.png'
 import { Link } from 'react-router-dom'
 
 const Task = () => {
@@ -241,7 +242,7 @@ const Task = () => {
                                                     class="color-blue text-decoration-underline">Read More...</a> </p>
 
                                             <div class="d-flex align-items-center gap-3 list-card-user-profile">
-                                                <img src="image/image (1).png" alt=""/>
+                                                <img src={img9} alt=""/>
                                                 <p class="font-14 mb-0 body-sub-heading ">Created by: <span>Vipin
                                                         Pal</span></p>
                                             </div>

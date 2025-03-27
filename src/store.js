@@ -7,6 +7,7 @@ import apiSlice from "./components/features/apiSlice";
 import productSlice from "./components/features/productSlice";
 import commentSlice from "./components/features/commentSlice";
 import companySlice from "./components/features/companySlice";
+import cartSlice from "./components/features/cartSlice";
 
 const store = configureStore({
     reducer:{
@@ -17,6 +18,7 @@ const store = configureStore({
         products: productSlice,
         comments: commentSlice,
         company: companySlice,
+        cart: cartSlice
     }
 })
 

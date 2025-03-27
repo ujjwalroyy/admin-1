@@ -1,16 +1,26 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { getProducts } from '../features/productSlice';
+import { addTCart } from '../features/cartSlice';
 import '../css/custom.css'
 import '../css/media.css'
 import Sideer from '../sider/Sideer';
 import Header from '../Header/Header';
+import CartItem from './CartItem';
 
 const Product = () => {
     const dispatch = useDispatch()
     const { data, isLoading, isError } = useSelector((state) => state.products)
     // const [isShowMore, setShowMore] = useState(false)
+    const items = useSelector((state) => state.cart.localStorageItems)
 
+    const showCart = () => {
+        console.log("Items ", items);
+    }
+
+    const addToCart = (val) => {
+        dispatch(addTCart(val))
+    }
     useEffect(() => {
         dispatch(getProducts())
     }, [dispatch])
@@ -35,7 +45,8 @@ const Product = () => {
                                             <div className='project-card-heading'>
                                                 <p>{product.description.slice(0, 40)}</p>
                                             </div>
-                                            <button className='cart-btn'>Buy</button>
+                                            <button className='cart-btn' onClick={(e) => addToCart(product)}>Add To Cart</button>
+                                            <button className='cart-btn' onClick={showCart}>Show Cart</button>
                                         </div>
                                     )
                                 })) : isLoading ? <h5 style={{ textAlign: 'center' }}>Loading...</h5> : <h5 style={{ textAlign: 'center' }}>{'some thing wents wrong' || isError}</h5>}

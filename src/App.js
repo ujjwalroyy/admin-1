@@ -8,7 +8,8 @@ import AddTasks from './components/Tasks/AddTasks';
 import HomePage from './components/Pages/HomePage';
 import Product from './components/Pages/Product';
 import Sideer from './components/sider/Sideer';
-import Task from './components/Pages/Task';
+// import Task from './components/Pages/Task';
+import CartItem from './components/Pages/CartItem';
 
 
 function App() {
@@ -28,7 +29,8 @@ function App() {
           {/* <Route path='/project-detail' element={isLoggedIn === true ? <ProjectDetails/> : <LoginPage/>} /> */}
           <Route path='/add-tasks' element={<PrivateRoute Component={AddTasks} />} />
           <Route path='/products' element={<PrivateRoute Component={Product} />} />
-          <Route path='/tasks' element={<PrivateRoute Component={Task} />} />
+          {/* <Route path='/tasks' element={<PrivateRoute Component={Task} />} /> */}
+          <Route path='/cart-items' element={<PrivateRoute Component={CartItem} />} />
         </Routes>
       </BrowserRouter>
   );
