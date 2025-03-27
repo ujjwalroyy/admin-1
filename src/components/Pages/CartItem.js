@@ -39,3 +39,36 @@ const CartItem = () => {
 }
 
 export default CartItem
+
+                          import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { getCartItem } from '../features/cartSlice'
+
+const CartItem = () => {
+    const dispatch = useDispatch()
+    const items = useSelector((state) => state.cart.localStorageItems)
+
+    useEffect(() => {
+        dispatch(getCartItem())
+    }, [dispatch])
+
+    return (
+        <div>
+            {items && items.length > 0 ? (
+                items.map((it, index) => (
+                    <div key={index} className="card-body">
+                        <img src={it.image} alt={it.title} style={{ width: '100px', height: '100px' }} />
+                        <p>Category: {it.category}</p>
+                        <p>Description: {it.description}</p>
+                        <p>Price: ₹{it.price}</p>
+                        <p>Title: {it.title}</p>
+                    </div>
+                ))
+            ) : (
+                <p>No items in the cart</p>
+            )}
+        </div>
+    )
+}
+
+export default CartItem
